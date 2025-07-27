@@ -2,11 +2,11 @@
 
 ## 🤝 Collaborators
 
-- John Yoo
-  [GitHub](https://github.com/ExtraBlackBerry) • [LinkedIn](https://www.linkedin.com/in/shunjyoo/)
+**John Yoo**  
+[GitHub](https://github.com/ExtraBlackBerry) | [LinkedIn](https://www.linkedin.com/in/shunjyoo/)
 
-- Foster Rae 
-  [GitHub](https://github.com/FosterSenpai) • [LinkedIn](https://www.linkedin.com/in/fosterrae/)
+**Foster Rae**  
+[GitHub](https://github.com/FosterSenpai) | [LinkedIn](https://www.linkedin.com/in/fosterrae/)
 
 A Natural Language Processing (NLP) project focused on verifying factual and statistical claims. The goal is twofold:  
 - To **educate ourselves** on the workings of NLP techniques.  
