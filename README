@@ -1,8 +1,26 @@
-Required libraries:
+# 🧠 NLP Fact Checker – Browser Extension & Scraper
 
-pip install matplotlib, spacy,  seaborn, networkx, pandas // 27.07.25
-pip install wikipedia, wikipedia-api, sqlite3  // 28.07.25
+John Yoo [Github](https://github.com/ExtraBlackBerry) [Linkedin](https://www.linkedin.com/in/shunjyoo/)
+Foster Rae[Github](https://github.com/FosterSenpai) [Linkedin](https://www.linkedin.com/in/fosterrae/)
 
+A Natural Language Processing (NLP) project focused on verifying factual and statistical claims. The goal is twofold:  
+- To **educate ourselves** on the workings of NLP techniques.  
+- To **build a simple fact checker** browser extension 
 
-To run scraper app run on root folder
-    python -m src.Helper_App.scraper_app
+---
+
+## 🎯 Project Goals
+
+- ✅ Learn and apply core concepts of NLP and statistical data analysis.
+- ✅ Build a backend system to scrape and store Wikipedia category data.
+- ✅ Develop a browser extension to highlight and verify factual statements in real-time.
+
+---
+
+## 🧰 Required Libraries
+
+Install dependencies with:
+
+```bash
+pip install matplotlib spacy seaborn networkx pandas
+pip install wikipedia wikipedia-api
