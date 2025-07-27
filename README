@@ -1,0 +1,4 @@
+Required environments:
+
+pip install matplotlib, spacy,  seaborn, networkx, pandas // 27.07.25
+

@@ -1,0 +1,37 @@
+Documentation on what was worked on
+
+-----26/07/25-----
+
+GOAL: Trying to plan a direction and general idea of how the app should work.
+
+What we did:
+
+    Set up Git repo
+    Set up environment on VSCode
+
+    Planned out the app system and direction
+
+        --Core--
+
+        claim extraction
+        claim verifier
+
+        --Addtional Features--
+
+        Audio to txt --Add later on
+        web browser extension
+
+    Learning more about SpaCy.
+    Trying to understand English sentance structures.
+
+Compressing sentences(Triplet Extraction) using spacy.
+
+------27/07/25------
+
+GOAL: Setting milestones, creating flow chart for each core features.
+
+What we did:
+
+    Worked on the pipeline structure.
+    Set up Jira board.
+    Made some progress on UML diagram.
