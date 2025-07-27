@@ -30,6 +30,12 @@ class Scraper_App:
         self._entry = tk.Entry(self.root, width=40)
         self._entry.pack(pady=5)
 
+        self._category = tk.Label(self.root, text="Depth: ")
+        self._category.pack(pady=2)
+
+        self._depth = tk.Entry(self.root, width=2)
+        self._depth.pack(pady=2)
+
         self._scrape_button = tk.Button(self.root, text="Scrape", command=self._scrape_thread)
         self._scrape_button.pack(pady=10)
 
@@ -41,27 +47,37 @@ class Scraper_App:
     def _scrape_thread(self):
         self._scrape_button.config(text="Working...")
         self._scrape_button.config(state=tk.DISABLED)
+        self._save_button.config(state=tk.DISABLED)
 
         thread = threading.Thread(target=self._scrape)
         thread.start()
 
     def _scrape_done(self):
         self._scrape_button.config(state=tk.ACTIVE)
+        self._save_button.config(state=tk.ACTIVE)
         self._scrape_button.config(text="Scrape")
 
     def _scrape(self):
         _input = "Category:" + self._entry.get()
-        _result = self._scraper._category_scraper(_input,0, 1)
+        
+        if self._depth:
+            _result = self._scraper._category_scraper(_input,0, int(self._depth.get()))
+        else:
+            _result = self._scraper._category_scraper(_input)
 
         if _result["error_code"] == 0:
-            print("success")
+            print("Scraping Success")
         else:
             util.print_error(_result)
         self.root.after(0, self._scrape_done)
 
     def _save(self):
-        
-        self._scraper._save_data(self._sql_db)
+        _result = self._scraper._save_data(self._sql_db)
+
+        if _result["error_code"] == 0:
+            print("Saving Success")
+        else:
+            util.print_error(_result)
 
 if __name__ == "__main__":
     Scraper_App()
