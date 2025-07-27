@@ -24,7 +24,7 @@ What we did:
     Learning more about SpaCy.
     Trying to understand English sentance structures.
 
-Compressing sentences(Triplet Extraction) using spacy.
+    Compressing sentences(Triplet Extraction) using spacy.
 
 ------27/07/25------
 
@@ -35,3 +35,11 @@ What we did:
     Worked on the pipeline structure.
     Set up Jira board.
     Made some progress on UML diagram.
+
+------28/07/25------
+
+GOAL: continue with flow chart and diagrams
+
+Feature updates:
+
+    simple wikipedia scraper and sqlite save feature added -John
