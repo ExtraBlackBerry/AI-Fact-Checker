@@ -28,4 +28,4 @@ Install dependencies with:
 
 ```bash
 pip install matplotlib spacy seaborn networkx pandas
-pip install wikipedia wikipedia-api
+pip install wikipedia wikipedia-api sqlite3
