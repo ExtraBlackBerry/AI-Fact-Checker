@@ -1,7 +1,6 @@
-Required environments:
+Required libraries:
 
 pip install matplotlib, spacy,  seaborn, networkx, pandas // 27.07.25
-
 pip install wikipedia, wikipedia-api, sqlite3  // 28.07.25
 
 
