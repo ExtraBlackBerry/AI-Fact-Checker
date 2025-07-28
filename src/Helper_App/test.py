@@ -10,7 +10,7 @@ from src.classes.TextCatergorizer import custom_cat
 nlp = spc.load("en_core_web_trf") 
 nlp.add_pipe("custom_categorizer", last=True)
 
-text = """I have three dollars in my pocket"""
+text = """iris menas."""
 
 doc = nlp(text)
 sentences = [sent for sent in doc.sents]

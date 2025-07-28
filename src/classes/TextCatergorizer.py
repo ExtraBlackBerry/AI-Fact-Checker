@@ -26,7 +26,7 @@ class TextCatergorizer:
             if ent.label_ in NUMERIC_VALUE:
                 pass
             else:
-                if (ent.text.lower()) in self._data_dict.keys:
+                if (ent.text.lower()) in self._data_dict.keys():
                     ent._.sub_category = self._data_dict[(ent.text.lower())]
 
         return self._doc

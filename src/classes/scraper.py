@@ -53,7 +53,7 @@ class Wiki_Scraper:
         
         self._visited_categories.add(category_name)
 
-        print("Visisted Categories: ", self._visited_categories)                        #make this into GUI 
+        #print("Visisted Categories: ", self._visited_categories)                        #make this into GUI 
         
         if category in self._visited_categories:
             return util.error_code(101, f"Category {category} already visited.")
