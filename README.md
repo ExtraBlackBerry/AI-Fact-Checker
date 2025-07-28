@@ -8,9 +8,10 @@
 **Foster Rae**  
 [GitHub](https://github.com/FosterSenpai) | [LinkedIn](https://www.linkedin.com/in/fosterrae/)
 
-A Natural Language Processing (NLP) project focused on verifying factual and statistical claims. The goal is twofold:  
-- To **educate ourselves** on the workings of NLP techniques.  
-- To **build a simple fact checker** browser extension 
+A Natural Language Processing (NLP) project focused on verifying factual and statistical claims. The goal is twofold:
+
+- To **educate ourselves** on the workings of NLP techniques.
+- To **build a simple fact checker** browser extension
 
 ---
 
@@ -29,3 +30,6 @@ Install dependencies with:
 ```bash
 pip install matplotlib spacy seaborn networkx pandas
 pip install wikipedia wikipedia-api sqlite3
+
+python -m spacy download en_core_web_sm #for scraper only
+```

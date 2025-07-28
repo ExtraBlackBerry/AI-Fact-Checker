@@ -15,6 +15,8 @@ class SqliteDB:
 
         self._conn = sqlite3.connect(db_path)
 
+        self._cursor = self._conn.cursor()
+
     def __del__(self):
         if hasattr(self, '_conn') and self._conn:
             if self._conn:
@@ -26,9 +28,8 @@ class SqliteDB:
                 return util.error_code(200, "Data Result is Empty")
 
             try:
-                _cursor = self._conn.cursor()
 
-                _cursor.execute('''
+                self._cursor.execute('''
                     CREATE TABLE IF NOT EXISTS wiki_pages (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT UNIQUE,
@@ -39,7 +40,7 @@ class SqliteDB:
                 for title, categories in data_result.items():
                     try:
                         _categories_json = json.dumps(categories)
-                        _cursor.execute('''
+                        self._cursor.execute('''
                             INSERT OR REPLACE INTO wiki_pages (title, categories)
                             VALUES (?, ?)
                         ''', (title, _categories_json))
@@ -47,10 +48,16 @@ class SqliteDB:
                          return util.error_code(202, f"Insert failed for '{title}': {e}")
 
                 self._conn.commit()
-                return util.result("Success")
+                return util.result("Save Success")
 
             except Exception as e:
                 return util.error_code(201, f"Database save failed: {e}")
 
-    def load_sqlite(self):                                                                  #add this
-         pass
+    def load_sqlite(self, data_dict):      
+        _query = "SELECT title, categories FROM wiki_pages"                                              
+        self._cursor.execute(_query)
+        _rows = self.cursor.fetchall()
+        
+        for title, categories_json in _rows:
+            categories = json.loads(categories_json)                                        #json to list
+            data_dict[title] = categories

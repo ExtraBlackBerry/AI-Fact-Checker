@@ -5,6 +5,7 @@ import wikipediaapi
 import sqlite3
 
 from src.util import util
+from src.classes import simple_spacy_tool
 
 LOW_PRIORITY_CATEGORIES = [
                             #"Category:Articles with short description",
@@ -25,6 +26,8 @@ class Wiki_Scraper:
         self._data_result = {}
         self._visited_pages = set()
         self._visited_categories = set()
+
+        self._spacy_help = simple_spacy_tool.Spacy_Interface(["tagger", "attribute_ruler","parser"])
 
     def category_scraper_multi(self, category_list, depth=0, max_depth=99):              #scrapes multiple categories
         for cat in category_list:
@@ -75,7 +78,7 @@ class Wiki_Scraper:
                         _categories[i] = cat.replace("Category:", "")
                 
                 else:
-                    self._data_result[title] = _categories
+                    self._data_result[title] = self._spacy_help.lemmatize_list(_categories)     #lemmatize the category list
             
             elif member.ns == wikipediaapi.Namespace.CATEGORY and depth < max_depth:    #this means its a category
                 _result = self._category_scraper(title, depth +1, max_depth)
