@@ -72,12 +72,8 @@ class Scraper_App:
         self.root.after(0, self._scrape_done)
 
     def _save(self):
-        _result = self._scraper._save_data(self._sql_db)
+         self._scraper._save_data(self._sql_db)
 
-        if _result["error_code"] == 0:
-            print("Saving Success")
-        else:
-            util.print_error(_result)
 
 if __name__ == "__main__":
     Scraper_App()
