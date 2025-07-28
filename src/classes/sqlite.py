@@ -56,7 +56,7 @@ class SqliteDB:
     def load_sqlite(self, data_dict):      
         _query = "SELECT title, categories FROM wiki_pages"                                              
         self._cursor.execute(_query)
-        _rows = self.cursor.fetchall()
+        _rows = self._cursor.fetchall()
         
         for title, categories_json in _rows:
             categories = json.loads(categories_json)                                        #json to list

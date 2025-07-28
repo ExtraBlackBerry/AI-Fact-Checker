@@ -9,7 +9,7 @@ from src.classes import simple_spacy_tool
 
 LOW_PRIORITY_CATEGORIES = [
                             #"Category:Articles with short description",
-                           # "Category:All articles with unsourced statements",
+                            #"Category:All articles with unsourced statements",
                             "Category:All articles lacking reliable references",
                             #"Category:All stub articles",
                             "Category:All articles needing additional references",
@@ -27,7 +27,7 @@ class Wiki_Scraper:
         self._visited_pages = set()
         self._visited_categories = set()
 
-        self._spacy_help = simple_spacy_tool.Spacy_Interface(["tagger", "attribute_ruler","parser"])
+        self._spacy_help = simple_spacy_tool.Spacy_Interface("en_core_web_sm", ["tagger", "attribute_ruler","parser"])
 
     def category_scraper_multi(self, category_list, depth=0, max_depth=99):              #scrapes multiple categories
         for cat in category_list:
@@ -78,7 +78,12 @@ class Wiki_Scraper:
                         _categories[i] = cat.replace("Category:", "")
                 
                 else:
-                    self._data_result[title] = self._spacy_help.lemmatize_list(_categories)     #lemmatize the category list
+                    _result = self._spacy_help.lemmatize_list(_categories)
+                    if _result["error_code"] == 0:
+
+                        self._data_result[title.lower()] = _result["message"]     #lemmatize the category list
+                    else:
+                        util.print_error(_result)
             
             elif member.ns == wikipediaapi.Namespace.CATEGORY and depth < max_depth:    #this means its a category
                 _result = self._category_scraper(title, depth +1, max_depth)

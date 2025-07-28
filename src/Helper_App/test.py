@@ -1,16 +1,16 @@
+if __debug__:
+    import sys
+    import os
+
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 import spacy as spc
+from src.classes.TextCatergorizer import custom_cat
 
 nlp = spc.load("en_core_web_trf") 
+nlp.add_pipe("custom_categorizer", last=True)
 
-text = """Kiwi singer Hayley Westenra says she is “completely heartbroken” after learning her two long-time friends were killed in their home in Los Angeles.
-
-American Idol music supervisor Robin Kaye, 70, and her husband Tom De Luca, 70, were discovered dead in their Encino home by police on July 14, the Los Angeles Police Department (LAPD) said in a statement.
-
-The incident occurred four days earlier, on July 10.
-
-A day after the bodies were found, authorities arrested 22-year-old Encino resident Ramond Boodarian, the LAPD confirmed.
-
-This week, Westenra, 38, took to social media to express her shock and sadness."""
+text = """I have three dollars in my pocket"""
 
 doc = nlp(text)
 sentences = [sent for sent in doc.sents]
@@ -21,15 +21,14 @@ obj = None
 subject = []
 test = []
 
-for i, sentence in enumerate(sentences):
+# for i, sentence in enumerate(sentences):
 
-    print(f"{i+1}: {sentence}")
-    
-    for token in sentence:
-        print(f"{token.text} : {token.lemma_}")
+#     print(f"{i+1}: {sentence}")
+
+#     for token in sentence:
+#         print(f"{token.text} : {token.lemma_}")
+        
 #         if token.dep_ in ("nsubj", "nsubjpass"):
-
-            
 
 #             test.append(token.text)
 #             subject = test
@@ -53,16 +52,18 @@ for i, sentence in enumerate(sentences):
 #             if subject:       
 #                 print(subject, predicate, obj)
 
+
 #             obj = None
 #             check = None
         #print(child.text, ", ")
 
     # for token in sentence:
+        
     #     print("text: ",token.text,"| Dep_: ", token.dep_,"| Head.text: ", token.head.text,"| pos_: ", token.pos_,
     #             [child for child in token.children])
 
 
-# for ent in doc.ents:
-#     print(ent.text, ent.label_)
+for ent in doc.ents:
+    print(ent.text, ent.label_, ent._.sub_category)
     
 #print(root_verb)

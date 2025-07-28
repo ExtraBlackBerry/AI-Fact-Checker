@@ -1,4 +1,5 @@
 import spacy as spc
+from src.util import util
 
 class Spacy_Interface:
     def __init__(self, pipeline_type = "en_core_web_sm", disable_list = []): #"tagger", "attribute_ruler","parser"
@@ -16,4 +17,14 @@ class Spacy_Interface:
             _category_lemma = " ".join(_category_lemma_list)
             _result.append(_category_lemma)
 
-        return _result
+        return util.result(_result)
+    
+    def spacy_ner(self, title):
+        _result = []
+        _doc = self._nlp(title)
+        for ent in _doc.ents:
+            _result.append(ent.label_)
+        _return = " ".join(_result)
+
+        return util.result(_return)
+        
