@@ -13,7 +13,14 @@ class ClaimFilter1:
         self._sentences = [sent for sent in doc.sents]
         self._claims = []
         self._non_claims = []
-        self._filtered_claims_df = pd.DataFrame()
+        self._filtered_claims_df = pd.DataFrame(columns=[
+            "claim_text",           # The actual claim sentence/text
+            "subject",              # Main entity/subject of the claim
+            "predicate",            # Main verb or action in the claim
+            "object",               # Object of the claim
+            "sub_category",         # Wikipedia sub-category from token data
+            "entities",             # Named entities in the claim
+        ])
 
     def _filter_claims(self, doc: Doc):
         """
@@ -21,8 +28,9 @@ class ClaimFilter1:
         Args:
             doc (Doc): The spaCy Doc object to filter.
         Returns:
-            The filtered Doc with claims removed.  
-            The filtered claims as a DataFrame for model training.
+            tuple: (remaining_doc, filtered_claims_df)
+                - remaining_doc: Doc with claim sentences removed
+                - filtered_claims_df: DataFrame with filtered claims for training
         """
         pass
     
