@@ -29,3 +29,9 @@ Install dependencies with:
 ```bash
 pip install matplotlib spacy seaborn networkx pandas
 pip install wikipedia wikipedia-api sqlite3
+
+```
+Download required pipelines with:
+```bash
+python -m spacy download en_core_web_trf
+```
