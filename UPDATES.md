@@ -61,9 +61,11 @@ GOAL:
 What we did:
 
     Scrapped pipeline interface class and started work on filter 1.
-
+    
+    
 Feature updates:
 
     ClaimFilter1.py custom component - Foster
-
+    added scraper to only get categories with 60% similiarty to its title.
+    TextCatergorizer now assigns sub_categories from the sqlite db if NER.text exists in the db.
 ---
