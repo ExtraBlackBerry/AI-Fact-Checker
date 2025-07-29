@@ -49,12 +49,22 @@ class ClaimFilter1:
                     "claim_text": sentence.text.strip(),
                     "claimbusters_score": claim_score,
                     "subject": self._extract_subject(sentence),
-                    "pred": None,         # TODO: Extract predicate verb
-                    "obj": None,          # TODO: Extract object
+                    "pred": self._extract_predicate(sentence),
+                    "obj": self._extract_object(sentence),
                     "sub_category": None, # TODO: Extract sub-category from token data
                     "entities": [ent.text for ent in sentence.ents] # TODO: Get more info about entities
                 }
                 claims_data.append(claim_data)
+                
+                # TODO: decide if sentence should be updated with new attributes to store claim data
+                # # Add extension to sentence for claim data
+                # if not Span.has_extension("claim_data"):
+                #     Span.set_extension("claim_data", default=None)
+                # # Add extension for is claim
+                # if not Span.has_extension("is_claim"):
+                #     Span.set_extension("is_claim", default=False)
+                # sentence._.claim_data = claim_data
+                
             else:
                 # Not a claim, keep in remaining doc
                 sentences_to_keep.append(sentence)
@@ -76,14 +86,9 @@ class ClaimFilter1:
         try:
             # ClaimBuster API endpoint
             api_endpoint = "https://idir.uta.edu/claimbuster/api/v2/score/text/"
-            
             # Request
-            headers = {
-                "x-api-key": self._api_key
-            }
-            payload = {
-                "input_text": text
-            }
+            headers = {"x-api-key": self._api_key}
+            payload = {"input_text": text}
             
             # Make API request
             response = requests.post(api_endpoint, json=payload, headers=headers)
@@ -103,6 +108,7 @@ class ClaimFilter1:
     def _extract_subject(self, sentence: Span) -> str:
         """Extract the main subject of the claim"""
         # Find the subject (usually the first named entity or noun)
+        # TODO: Decide wether to use dep_ instead of ents
         for ent in sentence.ents:
             if ent.label_ in ['PERSON', 'ORG', 'GPE']:
                 return ent.text
@@ -111,6 +117,28 @@ class ClaimFilter1:
         for token in sentence:
             if token.pos_ == 'NOUN' and not token.is_stop:
                 return token.text
+        
+        return "Unknown"
+    
+    def _extract_predicate(self, sentence: Span) -> str:
+        """Extract the main verb or action in the claim"""
+        # TODO: Actually implement
+        # For now, just getting first verb
+        for token in sentence:
+            if token.pos_ == 'VERB':
+                return token.text
+        
+        return "Unknown"
+    
+    def _extract_object(self, sentence: Span) -> str:
+        """Extract the object of the claim"""
+        # TODO: Actually implement
+        # For now, just getting objects from first verb children
+        for token in sentence:
+            if token.pos_ == 'VERB':
+                for child in token.children:
+                    if child.dep_ in ['dobj', 'pobj']:
+                        return child.text
         
         return "Unknown"
 
