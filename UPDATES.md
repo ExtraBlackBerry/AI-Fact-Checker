@@ -66,6 +66,14 @@ What we did:
 Feature updates:
 
     ClaimFilter1.py custom component - Foster
-    added scraper to only get categories with SIMILARITY_RATE similiarty to its title.    // SIMILARITY_RATE can be set in simple_spacy_tool.py
-    TextCatergorizer now assigns sub_categories from the sqlite db if NER.text exists in the db.
----
+    added scraper to only get categories with SIMILARITY_RATE similiarty to its title.    // SIMILARITY_RATE can be set in simple_spacy_tool.py -john
+    TextCatergorizer now assigns sub_categories from the sqlite db if NER.text exists in the db. -john
+-----30/07/25-----
+
+GOAL:
+
+What we did:
+
+Feature updates:
+
+    added ents.sentence to questions class - john
