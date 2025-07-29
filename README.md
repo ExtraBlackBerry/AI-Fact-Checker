@@ -28,8 +28,13 @@ A Natural Language Processing (NLP) project focused on verifying factual and sta
 Install dependencies with:
 
 ```bash
-pip install matplotlib spacy seaborn networkx pandas dotenv
-pip install wikipedia wikipedia-api sqlite3 coreferee
+pip install matplotlib seaborn networkx pandas dotenv
+pip install wikipedia wikipedia-api sqlite3
+
+pip install numpy==1.24.4
+pip install spacy==3.6.1
+pip install coreferee==1.4.0
+python -m coreferee install en
 
 python -m spacy download en_core_web_sm #for scraper only
 ```
