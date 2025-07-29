@@ -54,4 +54,16 @@ Feature updates:
     simple wikipedia scraper and sqlite save feature added -John
     pipeline_interface class -Foster
 
+------29/07/25------
+
+GOAL:
+
+What we did:
+
+    Scrapped pipeline interface class and started work on filter 1.
+
+Feature updates:
+
+    ClaimFilter1.py custom component - Foster
+
 ---
