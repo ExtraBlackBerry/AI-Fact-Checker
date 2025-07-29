@@ -73,15 +73,15 @@ class ClaimFilter1:
         """
         return doc
     
-    def _extract_subject(self, sent: Span) -> str:
+    def _extract_subject(self, sentence: Span) -> str:
         """Extract the main subject of the claim"""
         # Find the subject (usually the first named entity or noun)
-        for ent in sent.ents:
+        for ent in sentence.ents:
             if ent.label_ in ['PERSON', 'ORG', 'GPE']:
                 return ent.text
         
         # USe first noun as subject if no named entity found
-        for token in sent:
+        for token in sentence:
             if token.pos_ == 'NOUN' and not token.is_stop:
                 return token.text
         
