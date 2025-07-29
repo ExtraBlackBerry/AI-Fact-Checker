@@ -29,7 +29,7 @@ Install dependencies with:
 
 ```bash
 pip install matplotlib spacy seaborn networkx pandas dotenv
-pip install wikipedia wikipedia-api sqlite3
+pip install wikipedia wikipedia-api sqlite3 coreferee
 
 python -m spacy download en_core_web_sm #for scraper only
 ```
