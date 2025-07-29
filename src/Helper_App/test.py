@@ -10,71 +10,7 @@ from src.classes.TextCatergorizer import custom_cat
 nlp = spc.load("en_core_web_trf") 
 nlp.add_pipe("custom_categorizer", last=True)
 
-text = """EDINBURGH, Scotland (AP) — U.S. President Donald Trump met on Monday at one of his Scottish golf courses with British Prime Minister Keir Starmer, who pressed him on the U.S. taking a larger role in helping quell a growing food crisis in Gaza amid Israel’s ongoing war with Hamas in the territory.
-
-Starmer and his wife, Victoria, arrived at Trump’s Turnberry course on the southern coast, and the Republican president spent several minutes chatting with them and proudly pointing out key aspects of the property. But the prime minister didn’t wait until they were inside to insist that Gaza would be a key topic in their meeting, calling what’s occurring there “a desperate situation.”
-
-Trump was asked if he agreed with Israeli Prime Minister Benjamin Netanyahu’s remarks about concerns of mass starvation in Gaza being overstated and replied, “I don’t know. I mean, based on television, I would say not particularly because those children look very hungry.”
-
-Starmer was far more forceful: “I think people in Britain are revolted at seeing what they are seeing on their screens.”
-
-Trump said Israel “has a lot of responsibility” for what’s happening but said the country is hampered by considerations of the remaining hostages it wants to see kept alive and freed.
-
-“I think Israel can do a lot,” Trump said, without offering more information.
-
-
-Trump has multiple Scottish golf courses
-The prime minister is meeting with Trump at Turnberry but also plans to travel north, to outside Aberdeen, where the president’s family has a second golf course and is holding a ribbon-cutting for a third one on Tuesday.
-
-The events allow Trump to try and make good on a post from his first term in 2019, when he wrote of his Turnberry property, “Very proud of perhaps the greatest golf course anywhere in the world. Also, furthers U.K. relationship!”
-
-Starmer is famously not a golfer, but toggling between Trump’s Scottish courses shows the outsized influence the president puts on properties bearing his name — and on golf’s ability to shape geopolitics.
-
-Still, Monday’s talks also covered far more serious issues.
-
-The prime minister wants Washington’s help in convincing Israel to allow more aid into Gaza and attempting to end what Downing Street called “the unspeakable suffering and starvation” while pushing for a ceasefire.
-
-Britain, along with France and Germany, has criticized Israel for “withholding essential humanitarian assistance” as hunger spreads in Gaza. Over the weekend, Starmer said Britain will take part in efforts led by Jordan to airdrop aid after Israel temporarily eased restrictions.
-
-But British Business Secretary Jonathan Reynolds acknowledged Monday that only the U.S. has “the leverage” to make a real difference in the conflict. Trump spoke before the meeting with Starmer about wanting to help starving children, but he has also repeatedly complained about the U.S. not getting enough credit for organizing past food aid into Gaza.
-
-“Nobody said even thank you,” he said. “Somebody should say thank you.”
-
-Palestinian state questions and Ukraine also being discussed
-Starmer is under pressure from his Labour Party lawmakers to follow France in recognizing a Palestinian state, a move both Israel and the U.S. have condemned. The British leader says the U.K. supports statehood for the Palestinians but it must be “part of a wider plan” for a two-state solution to the Israel-Palestinian conflict.
-
-Trump, however, said Monday of Starmer doing so, “I don’t mind him taking a position.”
-
-Also on Monday’s agenda are efforts to promote a possible peace deal to end fighting in Russia’s war with Ukraine, particularly trying to force Russian President Vladimir Putin to the negotiating table within a 50-day window Trump set earlier this month.
-
-Trump said before the meeting with Starmer that he’d work to reduce the “50 days to a lesser number” and urged Russia to agree to a deal.
-
-Trump in the past sharply criticized Ukrainian President Volodymyr Zelenskyy for also failing to express enough public gratitude toward U.S. support for his country, taking a similar tack he’s now adopting when it comes to aid for Gaza. The president, though, has shifted away from that tone and more sharply criticized Putin and Russia in recent weeks.
-
-Trump’s new golf course near Aberdeen opens to the public on Aug. 13 and tee times are already for sale — with the course betting that a presidential visit can help boost sales. Protesters have planned a demonstration in Balmedie, near Trump’s existing Aberdeen golf course. That follows protests across Scotland on Saturday decrying the president’s visit as he was out golfing.
-
-Refining past trade agreements
-While China initially responded to Trump’s tariff threats by retaliating with high import taxes of its own on U.S. goods, it has since begun negotiating to ease trade tensions. Starmer and his country have taken a far softer approach.
-
-He’s gone out of his way to work with Trump, flattering the president repeatedly during a February visit to the White House, and teaming up to announce a joint trade framework on tariffs for some key products in May.
-
-Starmer and Trump then signed a trade agreement during the G7 summit in Canada that freed the U.K.'s aerospace sector from U.S. tariffs and used quotas to reduce them on auto-related industries from 25% to 10% while increasing the amount of U.S. beef it pledged to import.
-
-“The U.K. is very well-protected. You know why? Because I like them — that’s their ultimate protection,” Trump said of U.S. tariff policy during the G7.
-
-Discussions with Starmer follow a Trump meeting Sunday with European Commission chief Ursula von der Leyen at his Turnberry course. They announced a trade framework that will put 15% tariffs on most goods from both countries, though many major details remain pending.
-
-The president has for months railed against yawning U.S. trade deficits around the globe and sees tariffs as a way to try and close them in a hurry. But the U.S. ran an $11.4 billion trade surplus with Britain last year, meaning it exported more to the U.K. than it imported. Census Bureau figures this year indicate that the surplus could grow.
-
-There are still lingering U.S.-Britain trade issues that need fine-tuning. The deal framework from May said British steel would enter the U.S. duty-free, but it continues to face a 25% levy.
-
-U.K. Business Secretary Jonathan Reynolds said Monday that “negotiations have been going on on a daily basis” and “there’s a few issues to push a little bit further today,” though he downplayed expectations of a resolution.
-
-The leader of Scotland, meanwhile, has urged Trump to lift the current 10% tariff on Scotch whisky. First Minister John Swinney said the spirit’s “uniqueness” justified an exemption.
-
-___
-
-Associated Press writer Jill Lawless in London and Michelle L. Price and Chris Megerian in Washington contributed to this report."""
+text = """Donald Trump said hello."""
 
 doc = nlp(text)
 sentences = [sent for sent in doc.sents]
@@ -130,13 +66,13 @@ test = []
 ent_sent = []
 
 for ent in doc.ents:
-    #print(ent.text, ent.label_, ent._.sub_category)
-    if ent.sent in ent_sent:
-        continue
-    ent_sent.append(ent.sent)
+    print(ent.text, ent.label_, ent._.sub_category)
+    # if ent.sent in ent_sent:
+    #     continue
+    # ent_sent.append(ent.sent)
 
-for sent in ent_sent:
-    print(sent)
+# for sent in ent_sent:
+#     print(sent)
     # for token in sent:        
     #     if token.dep_ in ("nsubj", "nsubjpass"):
 

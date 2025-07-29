@@ -26,6 +26,7 @@ class Wiki_Scraper:
         self._data_result = {}
         self._visited_pages = set()
         self._visited_categories = set()
+        self._data_ner_dict = {}
 
         self._spacy_help = simple_spacy_tool.Spacy_Interface("en_core_web_sm", ["tagger", "attribute_ruler","parser"])
 
@@ -78,10 +79,14 @@ class Wiki_Scraper:
                         _categories[i] = cat.replace("Category:", "")
                 
                 else:
-                    _result = self._spacy_help.lemmatize_list(_categories)
+                    _result = self._spacy_help.lemmatize_list(_categories, title)
+                    _ner_result = self._spacy_help.spacy_ner(title)
                     if _result["error_code"] == 0:
-
                         self._data_result[title.lower()] = _result["message"]     #lemmatize the category list
+                        if _ner_result["message"]:
+                            self._data_ner_dict[title.lower()] = _ner_result["message"]
+                        else:
+                            self._data_ner_dict[title.lower()] = "None"
                     else:
                         util.print_error(_result)
             
@@ -109,7 +114,7 @@ class Wiki_Scraper:
         self._visited_categories = set()
 
     def _save_data(self, sqlite_db):
-        _result = sqlite_db.save_sqlite(self._data_result)
+        _result = sqlite_db.save_sqlite(self._data_result, self._data_ner_dict)
         if _result["error_code"] == 0:
             pass
         else:
