@@ -16,7 +16,7 @@ class ClaimFilter1:
     def __init__(self, doc: Doc):
         self._doc = doc
         self._sentences = [sent for sent in doc.sents]
-        self._api_key = os.getenv('CLAIMBUSTER_API_KEY')
+        self._api_key = os.getenv('CLAIMBUSTER_API_KEY') # NEED api key in .env file
         self._score_threshold = CLAIM_PROBABILITIY_THRESHOLD
         self._filtered_claims_df = pd.DataFrame(columns=[
             "claim_text",           # The actual claim sentence/text
