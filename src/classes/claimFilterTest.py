@@ -38,6 +38,9 @@ if __name__ == "__main__":
                 print(f"  Text: {row['claim_text']}")
                 print(f"  Score: {row['claimbusters_score']:.3f}")
                 print(f"  Subject: {row['subject']}")
+                print(f"  Predicate: {row['pred']}")
+                print(f"  Object: {row['obj']}")
+                print(f"  Sub-categories: {row['sub_category']}")
                 print(f"  Entities: {row['entities']}")
             
             # Show df structure
