@@ -15,11 +15,30 @@ class ClaimFilter1:
         self._non_claims = []
         self._filtered_claims_df = pd.DataFrame()
 
-    def _filter_claims(self):
+    def _filter_claims(self, doc: Doc):
+        """
+        Filters claims in the doc.
+        Args:
+            doc (Doc): The spaCy Doc object to filter.
+        Returns:
+            The filtered Doc with claims removed.  
+            The filtered claims as a DataFrame for model training.
+        """
         pass
     
-    def _contains_claim(self):
-        pass
+    def _contains_claim(self, sentence: Span) -> bool:
+        """
+        Determine if a sentence contains a claim.
+        """
+        return False
+    
+    def _filter_doc(self, doc: Doc) -> Doc:
+        """
+        Filter the Doc to remove sentences that are claims.
+        Returns:
+            Doc: The filtered Doc with claims removed.
+        """
+        return doc
     
 # Custom component for spaCy pipeline
 @Language.component("claim_filter1")
