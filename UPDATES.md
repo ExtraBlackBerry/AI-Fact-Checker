@@ -80,3 +80,5 @@ What we did:
 Feature updates:
 
     added diagram on how the ML part of extractor will work -john
+    added diagram of rule based extractor -foster
+    implemented fallback claimbuster claim extractor -foseter
