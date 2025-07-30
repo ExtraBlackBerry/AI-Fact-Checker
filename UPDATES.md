@@ -56,11 +56,12 @@ Feature updates:
 
 ------29/07/25------
 
-GOAL:
+GOAL: discussed on the architecture and work on code
 
 What we did:
 
     Scrapped pipeline interface class and started work on filter 1.
+    assigned the architecture for Fact Extraction
     
     
 Feature updates:
@@ -70,10 +71,12 @@ Feature updates:
     TextCatergorizer now assigns sub_categories from the sqlite db if NER.text exists in the db. -john
 -----30/07/25-----
 
-GOAL:
+GOAL: Learn more indepth about the filters 1,2 for the extractor
 
 What we did:
 
+    Read more about the rule-based and ML-based classification for fact extraction
+
 Feature updates:
 
-    added ents.sentence to questions class - john
+    added diagram on how the ML part of extractor will work -john
