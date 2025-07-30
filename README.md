@@ -29,7 +29,8 @@ Install dependencies with:
 
 ```bash
 pip install matplotlib seaborn spacy networkx pandas dotenv
-pip install wikipedia wikipedia-api sqlite3 
+pip install wikipedia wikipedia-api sqlite3
+pip install scikit-learn matplotlib
 
 
 python -m spacy download en_core_web_sm #for scraper only
