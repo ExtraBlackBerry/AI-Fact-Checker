@@ -31,6 +31,8 @@ Install dependencies with:
 pip install matplotlib seaborn spacy networkx pandas dotenv
 pip install wikipedia wikipedia-api sqlite3
 pip install scikit-learn matplotlib
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
 
 
 python -m spacy download en_core_web_sm #for scraper only
