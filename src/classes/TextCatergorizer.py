@@ -35,6 +35,7 @@ class TextCatergorizer:
         return self._doc
     
     def _sub_cat_classifier(self, ent):
+        # ent._.sub_category = "ENTITY"
         if ent.text.lower() in self._data_dict.keys():
              _data = self._data_dict[(ent.text.lower())]
              ent._.sub_category = _data["categories"]
@@ -43,6 +44,7 @@ class TextCatergorizer:
 
 
     def _numeric_classifier(self, ent):                     #can add custom functionality for each Numerical NER
+        ent._.sub_category = "NUMERIC"
         match ent.label_:
             case "CARDINAL":
                 pass

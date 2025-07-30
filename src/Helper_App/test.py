@@ -4,100 +4,68 @@ if __debug__:
 
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import OneHotEncoder
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+
+import torch
 import spacy as spc
+spc.prefer_gpu()
+
 from src.classes.TextCatergorizer import custom_cat
+
+from tqdm import tqdm
 
 nlp = spc.load("en_core_web_trf") 
 nlp.add_pipe("custom_categorizer", last=True)
 
-text = """Donald Trump said hello."""
-
-doc = nlp(text)
-sentences = [sent for sent in doc.sents]
-
-root_verb = None
-predicate = None
-obj = None
-subject = []
-test = []
-
-# for i, sentence in enumerate(sentences):
-
-#     print(f"{i+1}: {sentence}")
-
-#     for token in sentence:
-#         print(f"{token.text} : {token.lemma_}")
-        
-#         if token.dep_ in ("nsubj", "nsubjpass"):
-
-#             test.append(token.text)
-#             subject = test
-
-#             predicate = token.head.text
-#         #     print(f"{token.text}")
-#         #     print(f"{token.head.text}")
-
-#             for child in token.head.children:    
-#                 if child.dep_ in ["prep", "dobj", "acomp", "oprd"]:
-#                     for grandchildren in child.children:
-#                         if grandchildren.dep_ == "pobj":
-#                             obj = grandchildren.text
-
-#                     if child.dep_ != "prep":
-#                         obj = child.text
-#                     break
-
-#             test = []
-
-#             if subject:       
-#                 print(subject, predicate, obj)
 
 
-#             obj = None
-#             check = None
-        #print(child.text, ", ")
+text = """California has begun seeing its first tsunami waves with elevated water levels in Crescent City, in Northern California near the Oregon border.
 
-    # for token in sentence:
-        
-    #     print("text: ",token.text,"| Dep_: ", token.dep_,"| Head.text: ", token.head.text,"| pos_: ", token.pos_,
-    #             [child for child in token.children])
+A wave over 1 foot has been observed, according to data from the National Oceanic and Atmospheric Administration, with more waves expected soon.
 
+The city is located along a 100-mile stretch of Northern California’s coast that is under a tsunami warning, the highest alert level. This area is under heightened tsunami risk because its unique underwater geography has the ability to “funnel wave energy,” according to the National Weather Service.
 
-ent_sent = []
-
-for ent in doc.ents:
-    print(ent.text, ent.label_, ent._.sub_category)
-    # if ent.sent in ent_sent:
-    #     continue
-    # ent_sent.append(ent.sent)
-
-# for sent in ent_sent:
-#     print(sent)
-    # for token in sent:        
-    #     if token.dep_ in ("nsubj", "nsubjpass"):
-
-    #         test.append(token.text)
-    #         subject = test
-
-    #         predicate = token.head.text
-    #     #     print(f"{token.text}")
-    #     #     print(f"{token.head.text}")
-
-    #         for child in token.head.children:    
-    #             if child.dep_ in ["prep", "dobj", "acomp", "oprd"]:
-    #                 for grandchildren in child.children:
-    #                     if grandchildren.dep_ == "pobj":
-    #                         obj = grandchildren.text
-
-    #                 if child.dep_ != "prep":
-    #                     obj = child.text
-    #                 break
-
-    #         test = []
-
-    #         if subject:       
-    #             print(subject, predicate, obj)
+The rest of the US West Coast is under a tsunami advisory."""
 
 
-    #         obj = None
-    #         check = None
+df = pd.read_csv(r"D:\MyProj\PBT\PBT-FactCheckerApp\Datasets\all_sentences.csv") 
+sentences = df["Text"].dropna().tolist()
+
+doc = list(tqdm(nlp.pipe(sentences), total=len(sentences)))
+
+embeddings = []
+
+for d in doc:
+    embeddings.append(d.vector.get())
+
+np_emb = np.array(embeddings)
+np.save("spacy_embeddings.npy", np_emb)
+
+# for d in doc:
+#     ner_emb = []
+#     sub = []
+
+
+#     for ent in d.ents:
+#         ner_emb.append(ent.label_)
+#         sub.append(ent.sub_category)
+
+
+#     subcategory_encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+#     subcategory_encoder.fit(sub)
+
+#     ner_encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+#     ner_encoder.fit(ner_emb)
+
+#     ner_vec = np.zeros(len(ner_encoder.categories_[0]))
+#     sub_vec = np.zeros(len(subcategory_encoder.categories_[0]))
+
+#     embeddings.append(np.concatenate([sub_vec, ner_vec, d.vector]))
+
