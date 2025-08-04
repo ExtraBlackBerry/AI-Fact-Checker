@@ -23,7 +23,9 @@ class Filter1:
             # TODO: What do we want to give to the model?
         ])
         
-    def filter_claims(self) -> (Doc, pd.DataFrame):
+    from typing import Tuple
+
+    def filter_claims(self) -> Tuple[Doc, pd.DataFrame]:
         """
         Filters claims from the document based on predefined rules.
         Returns:
