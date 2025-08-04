@@ -32,7 +32,7 @@ class Filter1:
             Tuple[Doc, pd.DataFrame]: The remaining document and a DataFrame of filtered claims.
         """
         claims_data = []
-        sentences_to_keep = []
+        sentence_docs_to_keep = []
         
         for sentence in self._sentences:
             score = self._score_sentence(sentence)
@@ -45,17 +45,21 @@ class Filter1:
                 # Is claim, add to df for model training
                 claims_data.append(claim_data)
             else:
-                # Not claim, keep sentence in doc
-                sentences_to_keep.append(sentence)
+                # Not claim, create individual doc for sentence to recreate full doc and keep attributes
+                sentence_doc = sentence.as_doc()
+                sentence_docs_to_keep.append(sentence_doc)
                 
-        # Create DataFrame from claims data
+        # Create df from claims data
         self._filtered_claims_df = pd.DataFrame(claims_data)
         
-        # Create a new Doc with the sentences that are not claims
-        # TODO: check what we need from old doc like entities, etc.
-        #remaining_doc = Doc() 
+        # Create a new doc with the sentences that are not claims
+        if sentence_docs_to_keep:
+            remaining_doc = Doc.from_docs(sentence_docs_to_keep, ensure_whitespace=True)
+        else:
+            # If no sentences to keep, create empty doc with same vocab
+            remaining_doc = Doc(self._doc.vocab)
         
-        return self._filtered_claims_df#, remaining_doc
+        return remaining_doc, self._filtered_claims_df
         
     def _score_sentence(self, sentence: Span) -> float:
         """
@@ -76,18 +80,43 @@ class Filter1:
         Returns:
             float: The score based on named entities.
         """
-        pass # PERSON, ORG, GPE + 0.3 others +=0.2
+        named_entities = [ent.label_ for ent in sentence.ents]
+        score = 0.0
+        
+        # Sentences about people, organizations, locations, etc. are more likely to be claims i think
+        # They are split up so the scores can be adjusted individually
+        # Could maybe increment for each instance of an entity so like multiple people in a sentence
+        if "PERSON" in named_entities:
+            score += 3.0
+        if "ORG" in named_entities:
+            score += 3.0
+        if "GPE" in named_entities:
+            score += 3.0
+            
+        if "PRODUCT" in named_entities:
+            score += 2.0
+        if "EVENT" in named_entities:
+            score += 2.0
+        if "WORK_OF_ART" in named_entities:
+            score += 3.0
+            
+        return score
     
     def _score_quantifiable_data(self, sentence: Span) -> float:
         """
-        Scores the quantifiable data in a sentence.
+        Increments score if the sentence contains quantifiable data.
         Args:
             sentence (Span): The sentence to score.
         Returns:
-            float: The score based on quantifiable data.
+            float: The score based on quantifiable data
         """
-        pass # DATE, TIME, PERCENT, MONEY, QUANTITY, CARDINAL += 2
-    
+        score = 0.0
+        for ent in sentence.ents:
+            if ent.label_ in ["DATE", "TIME", "PERCENT", "MONEY", "QUANTITY", "CARDINAL"]:
+                score += 2.0
+
+        return score
+
     def _score_strong_structures(self, sentence: Span) -> float:
         """
         Scores any subject-verb-object or passive subject-verb-agent structures in a sentence.
