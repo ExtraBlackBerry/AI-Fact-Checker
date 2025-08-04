@@ -5,6 +5,9 @@ from spacy.language import Language
 import pandas as pd
 
 # RESEARCH TODO: Look into, using sliding window(look at nearby words), scoring POS patterns
+# Statistical patterns detection, temporal context (stuff like "in 2023", "last year", etc.)
+# Most of this stuff can just be added as more scoring functions
+# stuff like "research shows", "according to", "studies indicate"
 
 class Filter1:
     def __init__(self, doc: Doc, score_threshold: float = 0.5):
@@ -16,16 +19,16 @@ class Filter1:
         """
         self._score_threshold = score_threshold
         self._doc = doc
-        self._sentences = [sent for sent in doc.sents]
+        # Filter out empty/whitespace-only sentences
+        self._sentences = [sent for sent in doc.sents if sent.text.strip()]
         self._filtered_claims_df = pd.DataFrame(columns=[
             "text",  # The text of the claim
             "score",  # The score of the claim
             # TODO: What do we want to give to the model?
         ])
         
-    from typing import Tuple
 
-    def filter_claims(self) -> Tuple[Doc, pd.DataFrame]:
+    def filter_claims(self):
         """
         Filters claims from the document based on predefined rules.
         Returns:
@@ -187,3 +190,4 @@ class Filter1:
 def claim_filter1_component(doc: Doc):
     filter1 = Filter1(doc)
     return filter1.filter_claims()
+
