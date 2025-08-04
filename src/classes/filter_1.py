@@ -3,14 +3,13 @@
 from spacy.tokens import Doc, Span
 from spacy.language import Language
 import pandas as pd
+import re
 
 # RESEARCH TODO: Look into, using sliding window(look at nearby words), scoring POS patterns
-# Statistical patterns detection, temporal context (stuff like "in 2023", "last year", etc.)
-# Most of this stuff can just be added as more scoring functions
-# stuff like "research shows", "according to", "studies indicate"
+# Statistical patterns detection, economic/policy language for political stuff
 
 class Filter1:
-    def __init__(self, doc: Doc, score_threshold: float = 0.5):
+    def __init__(self, doc: Doc, score_threshold: float = 3.0):
         """
         Initializes the filter with a document and a score threshold.
         Args:
@@ -78,6 +77,8 @@ class Filter1:
         score += self._score_named_entities(sentence)
         score += self._score_quantifiable_data(sentence)
         score += self._score_strong_structures(sentence)
+        score += self._score_temporal_context(sentence)
+        score += self._score_factual_indicators(sentence)
         score += self._score_is_question(sentence)
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
@@ -99,18 +100,18 @@ class Filter1:
         # They are split up so the scores can be adjusted individually
         # Could maybe increment for each instance of an entity so like multiple people in a sentence
         if "PERSON" in named_entities:
-            score += 3.0
+            score += 1.5
         if "ORG" in named_entities:
-            score += 3.0
+            score += 1.5
         if "GPE" in named_entities:
-            score += 3.0
+            score += 1.5
             
         if "PRODUCT" in named_entities:
-            score += 2.0
+            score += 1.0
         if "EVENT" in named_entities:
-            score += 2.0
+            score += 1.0
         if "WORK_OF_ART" in named_entities:
-            score += 3.0
+            score += 1.5
             
         return score
     
@@ -125,7 +126,7 @@ class Filter1:
         score = 0.0
         for ent in sentence.ents:
             if ent.label_ in ["DATE", "TIME", "PERCENT", "MONEY", "QUANTITY", "CARDINAL"]:
-                score += 2.0
+                score += 1.5
 
         return score
 
@@ -140,6 +141,97 @@ class Filter1:
         # TODO: Think about how to check for these with POS tags or maybe _dep
         return 0.0 #SUBJECT- VERB-OBJECT += 3 PASSIVE SUBJECT-VERB-AGENT += 3
     
+    def _score_temporal_context(self, sentence: Span) -> float:
+        """
+        Scores the presence of temporal context in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on temporal references found.
+        """
+        sentence_text = sentence.text.lower()
+        score = 0.0
+        
+        # Specific year patterns
+        year_patterns = [
+            r'\bin\s+\d{4}',     # "in 2023"
+            r'\bsince\s+\d{4}',  # "since 2020"
+            r'\bduring\s+\d{4}', # "during 2022"
+            r'\bfrom\s+\d{4}',   # "from 2021"
+            r'\buntil\s+\d{4}',  # "until 2024"
+            r'\bby\s+\d{4}',     # "by 2025"
+        ]
+        
+        for pattern in year_patterns:
+            if re.search(pattern, sentence_text):
+                score += 1.5
+                break
+        
+        # Relative temporal phrases 
+        relative_temporal = [
+            "last year", "this year", "next year",
+            "last month", "this month", "next month", 
+            "last week", "this week", "next week",
+            "last decade", "this decade", "next decade",
+            "recent years", "coming years", "past years",
+            "recently", "lately", "currently", "previously",
+            "earlier this year", "later this year", "for many decades",
+            "for many years", "for a long time", "in the past"
+        ]
+        
+        for phrase in relative_temporal:
+            if phrase in sentence_text:
+                score += 1.0
+                break
+        
+        return score
+    
+    def _score_factual_indicators(self, sentence: Span) -> float:
+        """
+        Scores the presence of factual indicator phrases in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on factual indicators found.
+        """
+        sentence_text = sentence.text.lower()
+        score = 0.0
+        strong_indicators = [
+            "according to", "research shows", "studies indicate", "data reveals",
+            "statistics show", "evidence suggests", "reports state", "findings show",
+            "survey found", "analysis reveals", "investigation found", "study found",
+            "research indicates", "data shows", "evidence indicates", "report shows"
+        ]
+        
+        for indicator in strong_indicators:
+            if indicator in sentence_text:
+                score += 2.0
+                break
+            
+        medium_indicators = [
+            "experts say", "scientists believe", "researchers claim",
+            "officials stated", "government data", "official records",
+            "published study", "peer-reviewed", "clinical trial",
+            "meta-analysis", "systematic review"
+        ]
+        
+        for indicator in medium_indicators:
+            if indicator in sentence_text:
+                score += 1.5
+                break
+            
+        weak_indicators = [
+            "it is reported", "sources say", "allegedly", "reportedly",
+            "claims that", "suggests that", "indicates that"
+        ]
+        
+        for indicator in weak_indicators:
+            if indicator in sentence_text:
+                score += 0.5
+                break
+        
+        return score
+    
     def _score_is_question(self, sentence: Span) -> float:
         """
         Scores if the sentence is a question (just checking for '?').
@@ -148,9 +240,9 @@ class Filter1:
         Args:
             sentence (Span): The sentence to score.
         Returns:
-            float: -10 score if it's a question, otherwise 0.
+            float: -5 score if it's a question, otherwise 0.
         """
-        return -10.0 if sentence.text.strip().endswith('?') else 0.0
+        return -5.0 if sentence.text.strip().endswith('?') else 0.0
     
     def _score_hedging_words(self, sentence: Span) -> float:
         """
@@ -158,11 +250,12 @@ class Filter1:
         Args:
             sentence (Span): The sentence to score.
         Returns:
-            float: -4 if hedging words are present, otherwise 0.
+            float: -2 if hedging words are present, otherwise 0.
         """
+        # TODO: Add more hedging words https://knowadays.com/blog/hedging-language-when-to-use-it-and-when-to-avoid-it/
         hedging_words = ["might", "could", "may", "possibly", "perhaps", "believe",
                          "think", "feel", "seem", "suggest"]
-        return -4.0 if any(word in sentence.text.lower() for word in hedging_words) else 0.0
+        return -2.0 if any(word in sentence.text.lower() for word in hedging_words) else 0.0
     
     def _score_first_person_opinion(self, sentence: Span) -> float:
         """
@@ -170,22 +263,23 @@ class Filter1:
         Args:
             sentence (Span): The sentence to score.
         Returns:
-            float: -5 if first-person opinion is present, otherwise 0.
+            float: -2.5 if first-person opinion is present, otherwise 0.
         """
         sentence_text = sentence.text.lower()
         
-        # Check for first-person opinion phrases (higher penalty)
+        # Check for first-person opinion phrases
         opinion_phrases = ["i think", "i believe", "i feel", "i guess", "i suppose", 
                           "in my opinion", "my view is", "i would say", "i consider",
                           "we think", "we believe", "we feel", "our opinion"]
         
         for phrase in opinion_phrases:
             if phrase in sentence_text:
-                return -5.0
+                return -2.5
         # TODO: Maybe check for first person pronouns like "I", "we", "my", "our"? for less penalty
         return 0.0
         
-        # Custom component
+        
+# Custom component
 @Language.component("claim_filter1")
 def claim_filter1_component(doc: Doc):
     filter1 = Filter1(doc)

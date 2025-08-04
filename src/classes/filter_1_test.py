@@ -5,16 +5,24 @@ import spacy
 if __name__ == "__main__":
     nlp = spacy.load("en_core_web_trf")
     test_text = """
-    I think the weather is nice today. According to recent studies, 75% of people prefer sunny weather.
-    John went to Microsoft yesterday. The study found that sales increased by 20% in 2023.
-    I believe ice cream is delicious. Climate change has caused temperatures to rise by 1.5 degrees since 1880.
-    What time is the meeting? Research shows that remote work productivity increased during the pandemic.
-    Apple Inc. released new products in September 2023. Maybe we should consider other options.
-    """
+For many decades, we’ve enriched foreign industry at the expense of American industry.
+Subsidized the armies of other countries while allowing for the very sad depletion of our military.
+We've defended other nation’s borders while refusing to defend our own.
+And spent trillions of dollars overseas while America's infrastructure has fallen into disrepair and decay.
+
+We’ve made other countries rich while the wealth, strength, and confidence of our country has disappeared over the horizon.
+One by one, the factories shuttered and left our shores, with not even a thought about the millions upon millions of American workers left behind.
+The wealth of our middle class has been ripped from their homes and then redistributed across the entire world.
+But that is the past. And now we are looking only to the future.
+We assembled here today are issuing a new decree to be heard in every city, in every foreign capital, and in every hall of power.
+From this day forward, a new vision will govern our land.
+From this moment on, it’s going to be America First.
+Every decision on trade, on taxes, on immigration, on foreign affairs, will be made to benefit American workers and American families.
+"""
     doc = nlp(test_text)
     
     # Create filter and run it
-    filter1 = Filter1(doc, score_threshold=2.0)
+    filter1 = Filter1(doc)
     remaining_doc, claims_df = filter1.filter_claims()
     
     print("=== ORIGINAL TEXT ===")
