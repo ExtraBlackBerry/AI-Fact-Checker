@@ -5,9 +5,9 @@ import spacy
 if __name__ == "__main__":
     nlp = spacy.load("en_core_web_trf")
     test_text = """
-For many decades, we’ve enriched foreign industry at the expense of American industry.
+For many decades, we’ve enriched foreign industry at the expense of American industry,
 Subsidized the armies of other countries while allowing for the very sad depletion of our military.
-We've defended other nation’s borders while refusing to defend our own.
+We've defended other nation’s borders while refusing to defend our own,
 And spent trillions of dollars overseas while America's infrastructure has fallen into disrepair and decay.
 
 We’ve made other countries rich while the wealth, strength, and confidence of our country has disappeared over the horizon.

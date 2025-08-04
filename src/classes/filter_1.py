@@ -7,6 +7,9 @@ import re
 
 # RESEARCH TODO: Look into, using sliding window(look at nearby words), scoring POS patterns
 # Statistical patterns detection, economic/policy language for political stuff
+# Break down scoring of sentences to debug
+# How to extract claims from a sentence that has multiple claims?
+# break down sentences with multiple claims into individual sentences and append the previous part of the sentence? idk
 
 class Filter1:
     def __init__(self, doc: Doc, score_threshold: float = 3.0):
@@ -257,7 +260,7 @@ class Filter1:
         # maybe score multiple terms higher but not per
         basic_economic_terms = [
             "industry", "factories", "wealth", "trade", "infrastructure", 
-            "military", "workers", "taxes", "spending"
+            "military", "workers", "taxes", "spending", "armies"
         ]
         for term in basic_economic_terms:
             if term in sentence_text:
