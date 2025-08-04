@@ -29,7 +29,9 @@ class Filter1:
 
     def filter_claims(self):
         """
-        Filters claims from the document based on predefined rules.
+        The main method to filter claims from the document.  
+        It scores each sentence and separates claims from non-claims.  
+        Called by the custom component in spaCy pipeline.  
         Returns:
             Tuple[Doc, pd.DataFrame]: The remaining document and a DataFrame of filtered claims.
         """
@@ -79,6 +81,7 @@ class Filter1:
         score += self._score_strong_structures(sentence)
         score += self._score_temporal_context(sentence)
         score += self._score_factual_indicators(sentence)
+        score += self._score_economic_policy_language(sentence)
         score += self._score_is_question(sentence)
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
@@ -124,9 +127,15 @@ class Filter1:
             float: The score based on quantifiable data
         """
         score = 0.0
+        sentence_text = sentence.text.lower()
+        
+        # Standard spaCy named entities for quantities
         for ent in sentence.ents:
             if ent.label_ in ["DATE", "TIME", "PERCENT", "MONEY", "QUANTITY", "CARDINAL"]:
                 score += 1.5
+
+        # check for economic quantities that spaCy might miss
+        # TODO: Add regex patterns for "trillions of dollars", "millions of workers"
 
         return score
 
@@ -228,6 +237,43 @@ class Filter1:
         for indicator in weak_indicators:
             if indicator in sentence_text:
                 score += 0.5
+                break
+        
+        return score
+    
+    def _score_economic_policy_language(self, sentence: Span) -> float:
+        """
+        Simple scoring for economic and policy language.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on economic/policy terms found.
+        """
+        sentence_text = sentence.text.lower()
+        score = 0.0
+        
+        # Basic economic terms - just check if any are present
+        # TODO: Expand this list with more industry-specific terms
+        # maybe score multiple terms higher but not per
+        basic_economic_terms = [
+            "industry", "factories", "wealth", "trade", "infrastructure", 
+            "military", "workers", "taxes", "spending"
+        ]
+        for term in basic_economic_terms:
+            if term in sentence_text:
+                score += 1.5
+                break
+        
+        # Words that suggest economic policy changes
+        # TODO: Add more action verbs
+        # maybe different weights for different types of actions
+        policy_actions = [
+            "subsidized", "enriched", "spent", "redistributed", "shuttered",
+            "reformed", "regulated", "invested"
+            ]
+        for action in policy_actions:
+            if action in sentence_text:
+                score += 1.0
                 break
         
         return score
