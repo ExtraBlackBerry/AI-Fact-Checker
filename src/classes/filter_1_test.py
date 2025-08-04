@@ -14,7 +14,7 @@ if __name__ == "__main__":
     doc = nlp(test_text)
     
     # Create filter and run it
-    filter1 = Filter1(doc, score_threshold=5.0)
+    filter1 = Filter1(doc, score_threshold=2.0)
     remaining_doc, claims_df = filter1.filter_claims()
     
     print("=== ORIGINAL TEXT ===")
