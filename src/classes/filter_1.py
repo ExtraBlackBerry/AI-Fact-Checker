@@ -135,7 +135,7 @@ class Filter1:
             float: The score based on structures found.
         """
         # TODO: Think about how to check for these with POS tags or maybe _dep
-        pass #SUBJECT- VERB-OBJECT += 3 PASSIVE SUBJECT-VERB-AGENT += 3
+        return 0.0 #SUBJECT- VERB-OBJECT += 3 PASSIVE SUBJECT-VERB-AGENT += 3
     
     def _score_is_question(self, sentence: Span) -> float:
         """
