@@ -69,8 +69,17 @@ class Filter1:
         Returns:
             float: The score for the sentence.
         """
-        # Run all scoring functions and sum their scores
-        pass
+        score = 0.0
+        
+        # Score based on various criteria
+        score += self._score_named_entities(sentence)
+        score += self._score_quantifiable_data(sentence)
+        score += self._score_strong_structures(sentence)
+        score += self._score_is_question(sentence)
+        score += self._score_hedging_words(sentence)
+        score += self._score_first_person_opinion(sentence)
+        
+        return score
 
     def _score_named_entities(self, sentence: Span) -> float:
         """
@@ -125,6 +134,7 @@ class Filter1:
         Returns:
             float: The score based on structures found.
         """
+        # TODO: Think about how to check for these with POS tags or maybe _dep
         pass #SUBJECT- VERB-OBJECT += 3 PASSIVE SUBJECT-VERB-AGENT += 3
     
     def _score_is_question(self, sentence: Span) -> float:
@@ -161,21 +171,19 @@ class Filter1:
         """
         sentence_text = sentence.text.lower()
         
-        # Check for first person view phrases
-        # Maybe check for first person pronouns like "I", "we", "my", "our"? for less penalty
-        pass
+        # Check for first-person opinion phrases (higher penalty)
+        opinion_phrases = ["i think", "i believe", "i feel", "i guess", "i suppose", 
+                          "in my opinion", "my view is", "i would say", "i consider",
+                          "we think", "we believe", "we feel", "our opinion"]
+        
+        for phrase in opinion_phrases:
+            if phrase in sentence_text:
+                return -5.0
+        # TODO: Maybe check for first person pronouns like "I", "we", "my", "our"? for less penalty
+        return 0.0
         
         # Custom component
 @Language.component("claim_filter1")
 def claim_filter1_component(doc: Doc):
-    
-    _claim_filter1 = ClaimFilter1(doc)
-    # Run the filtering
-    remaining_doc, filtered_claims_df = _claim_filter1._filter_claims(doc)
-    
-    # Store filtered claims df in the doc for model training later
-    if not Doc.has_extension("filtered_claims"):
-        Doc.set_extension("filtered_claims", default=None)
-    doc._.filtered_claims = filtered_claims_df
-    
-    return remaining_doc  # Return doc with claims stored in extension
+    filter1 = Filter1(doc)
+    return filter1.filter_claims()
