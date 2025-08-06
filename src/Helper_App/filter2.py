@@ -1,16 +1,16 @@
 # 06.08.25 John
 
-# if __debug__:
-#     import sys
-#     import os
+if __debug__:
+    import sys
+    import os
 
-#     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from ...src.classes.extractorAI import ExtractorAI
+from src.classes.extractorAI import ExtractorAI
 
 
 class Filter2:
@@ -55,6 +55,8 @@ class Filter2:
         })
         self._main_model
 
+        _X_text = self._vectorizer.fit_transform(self._df['combined'])
+        self._main_model.predict(_X_text)
 
 
 
