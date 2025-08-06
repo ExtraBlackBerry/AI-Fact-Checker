@@ -144,8 +144,31 @@ class Filter1:
         Returns:
             float: The score based on structures found.
         """
-        # TODO: Think about how to check for these with POS tags or maybe _dep
-        return 0.0 #SUBJECT- VERB-OBJECT += 3 PASSIVE SUBJECT-VERB-AGENT += 3
+        score = 0.0
+        
+        has_subject = False
+        has_verb = False
+        has_object = False
+        
+        for token in sentence:
+            # Check for subjects
+            if token.dep_ in ["nsubj", "nsubjpass"]:
+                has_subject = True
+            
+            # Check for main verbs
+            if token.pos_ == "VERB" and token.dep_ in ["ROOT", "aux", "auxpass"]:
+                has_verb = True
+                
+            # Check for objects
+            if token.dep_ in ["dobj", "pobj", "iobj"]:
+                has_object = True
+        
+        # Score based on structure
+        if has_subject and has_verb and has_object:
+            score += 2.0  # Complete SVO structure
+        elif has_subject and has_verb:
+            score += 1.0  # At least subject-verb
+        return score
     
     def _score_temporal_context(self, sentence: Span) -> float:
         """
