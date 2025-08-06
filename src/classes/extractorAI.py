@@ -24,7 +24,7 @@ class ExtractorAI:
         self._model = self._set_cluster_model()
         self._fit_cluster_model()
 
-    def _feature_extraction(self, docs):
+    def _feature_extraction(self):
         _ent_num = []
         _ent_text = []
         _token_dep = []
@@ -57,8 +57,7 @@ class ExtractorAI:
             'token_dep' : _token_dep,
             'token_pos' : _token_pos,
             'sentences' : _sentences,
-            'combined' : _combined,
-            'sub_cat' : []                                      #not yet added
+            'combined' : _combined
         })
 
 
@@ -68,7 +67,7 @@ class ExtractorAI:
     def _fit_cluster_model(self):
         _X_text = self._vectorizer.fit_transform(self._df['combined'])
         self._model.fit(_X_text)
-        joblib.dump(self._model, 'ExtractorAI.pkl')
+        joblib.dump((self._vectorizer, self._model), 'ExtractorAI.pkl')
     
     def test_cluster(self, test_num):
         for i in range(test_num):
