@@ -149,6 +149,14 @@ class Filter1:
         """
         score = 0.0
         
+        sentence_text = sentence.text.lower()
+    
+        # No bonues for sentences that are policy statements
+        policy_indicators = ["will", "going to", "new decree", "new vision", "from this day", "from this moment"]
+        has_policy_language = any(indicator in sentence_text for indicator in policy_indicators)
+        if has_policy_language:
+            return 0.0
+        
         has_subject = False
         has_verb = False
         has_object = False
