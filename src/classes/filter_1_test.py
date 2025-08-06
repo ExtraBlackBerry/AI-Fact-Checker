@@ -23,7 +23,7 @@ Every decision on trade, on taxes, on immigration, on foreign affairs, will be m
     
     # Create filter and run it
     filter1 = Filter1(doc)
-    non_claim_doc, claim_doc = filter1.filter_claims()
+    claim_list, non_claim_list = filter1.filter_claims()
     
     print("=== ORIGINAL TEXT ===")
     non_empty_sentences = [sent for sent in doc.sents if sent.text.strip()]
@@ -32,17 +32,16 @@ Every decision on trade, on taxes, on immigration, on foreign affairs, will be m
         print(f"{i+1}: {sent.text.strip()}")
     
     print("\n=== EXTRACTED CLAIMS ===")
-    claim_sentences = list(claim_doc.sents)
-    print(f"Found {len(claim_sentences)} claim sentences")
-    if len(claim_sentences) > 0:
-        for i, sent in enumerate(claim_sentences):
+    print(f"Found {len(claim_list)} claim sentences")
+    if len(claim_list) > 0:
+        for i, sent in enumerate(claim_list):
             print(f"{i+1}: {sent.text.strip()}")
     else:
         print("No claims found with current threshold")
     
     print("\n=== REMAINING NON-CLAIM SENTENCES ===")
-    print(f"Remaining sentences: {len(list(non_claim_doc.sents))}")
-    for i, sent in enumerate(non_claim_doc.sents):
+    print(f"Remaining sentences: {len(non_claim_list)}")
+    for i, sent in enumerate(non_claim_list):
         print(f"{i+1}: {sent.text.strip()}")
     
         # Directly checking sentence scores with full breakdown
