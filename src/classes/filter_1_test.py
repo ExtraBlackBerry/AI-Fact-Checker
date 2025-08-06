@@ -23,7 +23,7 @@ Every decision on trade, on taxes, on immigration, on foreign affairs, will be m
     
     # Create filter and run it
     filter1 = Filter1(doc)
-    remaining_doc, claims_df = filter1.filter_claims()
+    non_claim_doc, claim_doc = filter1.filter_claims()
     
     print("=== ORIGINAL TEXT ===")
     non_empty_sentences = [sent for sent in doc.sents if sent.text.strip()]
@@ -32,17 +32,17 @@ Every decision on trade, on taxes, on immigration, on foreign affairs, will be m
         print(f"{i+1}: {sent.text.strip()}")
     
     print("\n=== EXTRACTED CLAIMS ===")
-    print(f"Found {len(claims_df)} claim sentences")
-    if len(claims_df) > 0:
-        # Print out df nice
-        for _, row in claims_df.iterrows():
-            print(f"Score {row['score']:.1f}: {row['text'].strip()}")
+    claim_sentences = list(claim_doc.sents)
+    print(f"Found {len(claim_sentences)} claim sentences")
+    if len(claim_sentences) > 0:
+        for i, sent in enumerate(claim_sentences):
+            print(f"{i+1}: {sent.text.strip()}")
     else:
         print("No claims found with current threshold")
     
     print("\n=== REMAINING NON-CLAIM SENTENCES ===")
-    print(f"Remaining sentences: {len(list(remaining_doc.sents))}")
-    for i, sent in enumerate(remaining_doc.sents):
+    print(f"Remaining sentences: {len(list(non_claim_doc.sents))}")
+    for i, sent in enumerate(non_claim_doc.sents):
         print(f"{i+1}: {sent.text.strip()}")
     
     # Directly checking sentence scores

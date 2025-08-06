@@ -21,13 +21,7 @@ class Filter1:
         """
         self._score_threshold = score_threshold
         self._doc = doc
-        # Filter out empty/whitespace-only sentences
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
-        self._filtered_claims_df = pd.DataFrame(columns=[
-            "text",  # The text of the claim
-            "score",  # The score of the claim
-            # TODO: What do we want to give to the model?
-        ])
         
 
     def filter_claims(self):
@@ -38,35 +32,35 @@ class Filter1:
         Returns:
             Tuple[Doc, pd.DataFrame]: The remaining document and a DataFrame of filtered claims.
         """
-        claims_data = []
-        sentence_docs_to_keep = []
+        non_claim_sentences = []
+        claim_sentences = []
         
         for sentence in self._sentences:
             score = self._score_sentence(sentence)
             if score >= self._score_threshold:
-                claim_data = {
-                    "text": sentence.text,
-                    "score": score,
-                    # TODO: Remember to update here as well when more added to claims DataFrame
-                }
-                # Is claim, add to df for model training
-                claims_data.append(claim_data)
-            else:
-                # Not claim, create individual doc for sentence to recreate full doc and keep attributes
+                # Is claim
                 sentence_doc = sentence.as_doc()
-                sentence_docs_to_keep.append(sentence_doc)
+                claim_sentences.append(sentence_doc)
+            else:
+                # Not claim
+                sentence_doc = sentence.as_doc()
+                non_claim_sentences.append(sentence_doc)
                 
-        # Create df from claims data
-        self._filtered_claims_df = pd.DataFrame(claims_data)
+        # Create doc from claims data
+        if claim_sentences:
+            claim_doc = Doc.from_docs(claim_sentences, ensure_whitespace=True)
+        else:
+            claim_doc = Doc(self._doc.vocab)
+            
         
         # Create a new doc with the sentences that are not claims
-        if sentence_docs_to_keep:
-            remaining_doc = Doc.from_docs(sentence_docs_to_keep, ensure_whitespace=True)
+        if non_claim_sentences:
+            non_claim_doc = Doc.from_docs(non_claim_sentences, ensure_whitespace=True)
         else:
             # If no sentences to keep, create empty doc with same vocab
-            remaining_doc = Doc(self._doc.vocab)
+            non_claim_doc = Doc(self._doc.vocab)
         
-        return remaining_doc, self._filtered_claims_df
+        return non_claim_doc, claim_doc
         
     def _score_sentence(self, sentence: Span) -> float:
         """
