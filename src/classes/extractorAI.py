@@ -8,7 +8,10 @@ from spacy.tokens import DocBin
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
+class BaseModel:
+    def __init__(self, jsonl_path):
+        self._df = pd.read_json(jsonl_path, lines=True)
+        
 
 class ExtractorAI:
     def __init__(self, doc_bin_path, k = 2, random_seed = 0):
@@ -58,6 +61,7 @@ class ExtractorAI:
             'token_pos' : _token_pos,
             'sentences' : _sentences,
             'combined' : _combined
+
         })
 
 
@@ -71,9 +75,10 @@ class ExtractorAI:
     
     def test_cluster(self, test_num):
         for i in range(test_num):
-            print("ID: ", i )
-            print("Cluster ID: ", self._model.labels_[i])
-            print("sentence: ", self._docs[i].text)
+            if self._model.labels_[i] == 0:
+                print("ID: ", i )
+                print("Cluster ID: ", self._model.labels_[i])
+                print("sentence: ", self._docs[i].text)
 
     def test_text(self, text):
         return self._model.predict(text)

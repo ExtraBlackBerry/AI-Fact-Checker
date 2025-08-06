@@ -27,6 +27,7 @@ nlp.add_pipe("custom_categorizer", last=True)
 df = pd.read_csv("Datasets/all_sentences.csv") 
 sentences = df["Text"].dropna().tolist()
 
+
 docs = list(tqdm(nlp.pipe(sentences), total=len(sentences)))
 
 doc_bin = DocBin(store_user_data=True)
@@ -34,6 +35,6 @@ doc_bin = DocBin(store_user_data=True)
 for doc in docs:
     doc_bin.add(doc)
 
-doc_bin.to_disk("text2doc.spacy")
+doc_bin.to_disk("Datasets/text2doc.spacy")
 
 
