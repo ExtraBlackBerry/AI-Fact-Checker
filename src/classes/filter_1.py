@@ -30,7 +30,7 @@ class Filter1:
         It scores each sentence and separates claims from non-claims.  
         Called by the custom component in spaCy pipeline.  
         Returns:
-            Tuple[Doc, pd.DataFrame]: The remaining document and a DataFrame of filtered claims.
+            Tuple[List[Doc], List[Doc]]: Lists of individual sentence docs for non-claims and claims.
         """
         non_claim_sentences = []
         claim_sentences = []
@@ -45,22 +45,8 @@ class Filter1:
                 # Not claim
                 sentence_doc = sentence.as_doc()
                 non_claim_sentences.append(sentence_doc)
-                
-        # Create doc from claims data
-        if claim_sentences:
-            claim_doc = Doc.from_docs(claim_sentences, ensure_whitespace=True)
-        else:
-            claim_doc = Doc(self._doc.vocab)
-            
         
-        # Create a new doc with the sentences that are not claims
-        if non_claim_sentences:
-            non_claim_doc = Doc.from_docs(non_claim_sentences, ensure_whitespace=True)
-        else:
-            # If no sentences to keep, create empty doc with same vocab
-            non_claim_doc = Doc(self._doc.vocab)
-        
-        return non_claim_doc, claim_doc
+        return non_claim_sentences, claim_sentences
         
     def _score_sentence(self, sentence: Span) -> float:
         """
