@@ -45,9 +45,21 @@ Every decision on trade, on taxes, on immigration, on foreign affairs, will be m
     for i, sent in enumerate(non_claim_doc.sents):
         print(f"{i+1}: {sent.text.strip()}")
     
-    # Directly checking sentence scores
-    print(f"\n=== SENTENCE SCORES ===")
+        # Directly checking sentence scores with full breakdown
+    print(f"\n=== SENTENCE SCORES WITH BREAKDOWN ===")
     for i, sent in enumerate(non_empty_sentences):
         score = filter1._score_sentence(sent)
         is_claim = "CLAIM" if score >= filter1._score_threshold else "non-claim"
         print(f"{i+1}: {score:.1f} [{is_claim}] {sent.text.strip()}")
+        
+        # Full breakdown for each sentence
+        print(f"   Named entities: {filter1._score_named_entities(sent):.1f}")
+        print(f"   Quantifiable data: {filter1._score_quantifiable_data(sent):.1f}")
+        print(f"   Strong structures: {filter1._score_strong_structures(sent):.1f}")
+        print(f"   Temporal context: {filter1._score_temporal_context(sent):.1f}")
+        print(f"   Factual indicators: {filter1._score_factual_indicators(sent):.1f}")
+        print(f"   Economic policy: {filter1._score_economic_policy_language(sent):.1f}")
+        print(f"   Question penalty: {filter1._score_is_question(sent):.1f}")
+        print(f"   Hedging words: {filter1._score_hedging_words(sent):.1f}")
+        print(f"   First person opinion: {filter1._score_first_person_opinion(sent):.1f}")
+    
