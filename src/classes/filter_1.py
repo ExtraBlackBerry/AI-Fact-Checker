@@ -149,11 +149,14 @@ class Filter1:
         has_subject = False
         has_verb = False
         has_object = False
+        is_passive = False
         
         for token in sentence:
             # Check for subjects
             if token.dep_ in ["nsubj", "nsubjpass"]:
                 has_subject = True
+                if token.dep_ == "nsubjpass":
+                    is_passive = True
             
             # Check for main verbs
             if token.pos_ == "VERB" and token.dep_ in ["ROOT", "aux", "auxpass"]:
@@ -166,6 +169,8 @@ class Filter1:
         # Score based on structure
         if has_subject and has_verb and has_object:
             score += 2.0  # Complete SVO structure
+            if is_passive:
+                score += 1.0  # Bonus for passive (apparently more factual)
         elif has_subject and has_verb:
             score += 1.0  # At least subject-verb
         return score
