@@ -124,12 +124,15 @@ class Filter1:
             float: The score based on quantifiable data
         """
         score = 0.0
-        sentence_text = sentence.text.lower()
         
-        # Standard spaCy named entities for quantities
         for ent in sentence.ents:
-            if ent.label_ in ["DATE", "TIME", "PERCENT", "MONEY", "QUANTITY", "CARDINAL"]:
+            if ent.label_ in ["PERCENT", "MONEY", "QUANTITY", "CARDINAL"]:
                 score += 1.5
+            # Make sure words like "today", "moment" don't count as quantifiable
+            elif ent.label_ in ["DATE", "TIME"]:
+                # Only score if it's one of these
+                if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
+                    score += 1.5
 
         # check for economic quantities that spaCy might miss
         # TODO: Add regex patterns for "trillions of dollars", "millions of workers"
