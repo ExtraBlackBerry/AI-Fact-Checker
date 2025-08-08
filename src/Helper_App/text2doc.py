@@ -24,8 +24,10 @@ from tqdm import tqdm                                                           
 nlp = spc.load("en_core_web_trf") 
 nlp.add_pipe("custom_categorizer", last=True)
 
-df = pd.read_csv("Datasets/all_sentences.csv") 
-sentences = df["Text"].dropna().tolist()
+df = pd.read_json("Datasets/ClaimBusterTrain.json") 
+sentences = df["text"].dropna().tolist()
+labels = df["label"].tolist()
+np.save("Datasets/labels.npy", labels)
 
 
 docs = list(tqdm(nlp.pipe(sentences), total=len(sentences)))
