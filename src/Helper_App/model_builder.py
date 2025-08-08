@@ -12,4 +12,3 @@ from src.classes.extractorAI import ExtractorAI
 
 if __name__ == "__main__":
     model = ExtractorAI("Datasets/text2doc.spacy")
-    model.test_cluster(100)

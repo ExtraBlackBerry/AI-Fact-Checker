@@ -28,15 +28,10 @@ class ExtractorAI:
         self._fit_cluster_model()
 
     def _feature_extraction(self):
-        _ent_num = []
-        _ent_text = []
-        _token_dep = []
-        _token_pos = []
-        _sentences = []
+
         _combined = []
         
         for doc in self._docs:
-            _sentences.append(doc.text)
             _ent_n = 0
             _ent_t = []
             for ent in doc.ents:
@@ -48,20 +43,10 @@ class ExtractorAI:
                 _token_d.append(t.dep_)
                 _token_p.append(t.pos_)
             
-            _ent_num.append(_ent_n)
-            _ent_text.append(' '.join(_ent_t))
-            _token_dep.append(' '.join(_token_d))
-            _token_pos.append(' '.join(_token_p))
             _combined.append((' '.join(_ent_t)) + ' ' + (' '.join(_token_d)) + ' ' +   (' '.join(_token_p)) + ' ' + str(_ent_n))
             
         return pd.DataFrame({
-            'entity_num' : _ent_num,
-            'entity_label' : _ent_text,
-            'token_dep' : _token_dep,
-            'token_pos' : _token_pos,
-            'sentences' : _sentences,
             'combined' : _combined
-
         })
 
 
