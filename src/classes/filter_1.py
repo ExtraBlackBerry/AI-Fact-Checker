@@ -90,15 +90,20 @@ class Filter1:
         for ent in sentence.ents:
             entity_counts[ent.label_] = entity_counts.get(ent.label_, 0) + 1
             
-        # High val ents
         high_value_entities = {
-            "PERSON": 1.5, "ORG": 1.5, "GPE": 1.5,
-            "WORK_OF_ART": 1.5, "LAW": 2.0, "EVENT": 1.0
+            "PERSON": 1.5, 
+            "ORG": 1.5, 
+            "GPE": 1.5,
+            "WORK_OF_ART": 2.0,
+            "LAW": 2.0, 
+            "EVENT": 1.5,
+            "PRODUCT": 1.0
         }
-        
-        # Medium value ents
         medium_value_entities = {
-            "PRODUCT": 1.0, "LANGUAGE": 0.8, "NORP": 1.2
+            "LANGUAGE": 0.8, 
+            "NORP": 1.0,
+            "FAC": 1.0,
+            "LOC": 1.0
         }
         
         # Score the ents
