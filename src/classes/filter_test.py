@@ -4,7 +4,28 @@ import spacy
 import pandas as pd
 
 debug = True
-
+def show_scores(filter, doc):
+        print("========= DEBUG =========")
+        # Get doc as sent for debugging scores
+        for sent in doc.sents: # IDk why sents[0] doesnt work to just get the sentence
+            print(f"Claims checked: {checked_count}")
+            print(f"Sentence: {sent.text}")
+            print(f"Score for named entities: {filter._score_named_entities(sent)}")
+            print(f"Score for quantifiable data: {filter._score_quantifiable_data(sent)}")
+            print(f"Score for strong structures: {filter._score_strong_structures(sent)}")
+            print(f"Score for temporal context: {filter._score_temporal_context(sent)}")
+            print(f"Score for factual indicators: {filter._score_factual_indicators(sent)}")
+            print(f"Score for economic policy language: {filter._score_economic_policy_language(sent)}")
+            print(f"Score for is question: {filter._score_is_question(sent)}")
+            print(f"Score for hedging words: {filter._score_hedging_words(sent)}")
+            print(f"Score for first person opinion: {filter._score_first_person_opinion(sent)}")
+            print(f"Score for contradiction markers: {filter.score_contradiction_markers(sent)}")
+            print(f"Score for factual relationships: {filter._score_factual_relationships(sent)}")
+            print(f"Score for definitive statements: {filter._score_definitive_statements(sent)}")
+            print(f"Score for combinations: {filter._score_combinations(sent)}")
+            print(f"Total score: {filter._score_sentence(sent)}")
+            print("===========================================\n")
+            
 # Test the filter
 if __name__ == "__main__":
     nlp = spacy.load("en_core_web_trf")
@@ -26,43 +47,15 @@ if __name__ == "__main__":
 
     non_claim_list, claim_list = [], []
     non_claim_list2, claim_list2 = [],[]
-
+    
+    checked_count = 0
     for i, text in enumerate(texts):
         doc = nlp(text)
+        checked_count += 1
         
         # Create filter and run it
         filter1 = Filter1(doc)
         non_claim_list, claim_list = filter1.filter_claims()
-        
-        if debug:
-            print("========= Filter 1 score breakdown =========")
-            for sent in doc.sents:
-                print(f"Sentence: {sent.text}")
-                print(f"Score for named entities: {filter1._score_named_entities(sent)}")
-                print(f"Score for quantifiable data: {filter1._score_quantifiable_data(sent)}")
-                print(f"Score for strong structures: {filter1._score_strong_structures(sent)}")
-                print(f"Score for temporal context: {filter1._score_temporal_context(sent)}")
-                print(f"Score for factual indicators: {filter1._score_factual_indicators(sent)}")
-                print(f"Score for economic policy language: {filter1._score_economic_policy_language(sent)}")
-                print(f"Score for is question: {filter1._score_is_question(sent)}")
-                print(f"Score for hedging words: {filter1._score_hedging_words(sent)}")
-                print(f"Score for first person opinion: {filter1._score_first_person_opinion(sent)}")
-                print(f"Score for contradiction markers: {filter1.score_contradiction_markers(sent)}")
-                print(f"Score for factual relationships: {filter1._score_factual_relationships(sent)}")
-                print(f"Score for definitive statements: {filter1._score_definitive_statements(sent)}")
-                print(f"Total score: {filter1._score_sentence(sent)}")
-                print("===========================================")
-            #score += self._score_named_entities(sentence)
-            #score += self._score_quantifiable_data(sentence)
-            #score += self._score_strong_structures(sentence)
-            #score += self._score_temporal_context(sentence)f
-            #score += self._score_factual_indicators(sentence)
-            #score += self._score_economic_policy_language(sentence)
-            #score += self._score_is_question(sentence)
-            #score += self._score_hedging_words(sentence)
-            #score += self._score_first_person_opinion(sentence)
-            #score += self.score_contradiction_markers(sentence)
-            print("===========================================")
 
         #filter2 testing
         filter2 = Filter2()
@@ -78,6 +71,7 @@ if __name__ == "__main__":
                     _false_true += 1
                     if debug:
                         print("Filter 1 incorrectly identified as VERIFIABLE")
+                        show_scores(filter1, doc)
 
         elif len(non_claim_list) > 0:
             # if len(non_claim_list) > 1:
@@ -94,6 +88,7 @@ if __name__ == "__main__":
                     _false_false += 1
                     if debug:
                         print("Filter 1 incorrectly identified as NOT VERIFIABLE")
+                        show_scores(filter1, doc)
 
 
         if len(claim_list2) > 0:
@@ -133,8 +128,5 @@ if __name__ == "__main__":
             print(f"Percentage Filter2: {(_true_true2 + _true_false2) / (_false_false2+_false_true2 +_true_false2+_true_true2) * 100:.2f}%")
 
         print(f"Total Correct extration: {(_true_true + _true_true2 + _true_false2) / total * 100:.2f}% claims")
-        print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims")
+        print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims\n")
         
-
-
-    
