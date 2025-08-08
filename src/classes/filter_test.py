@@ -3,7 +3,7 @@ from filter2 import Filter2
 import spacy
 import pandas as pd
 
-show_scores = True
+debug = True
 
 # Test the filter
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         filter1 = Filter1(doc)
         non_claim_list, claim_list = filter1.filter_claims()
         
-        if show_scores:
+        if debug:
             print("========= Filter 1 score breakdown =========")
             for sent in doc.sents:
                 print(f"Sentence: {sent.text}")
@@ -48,6 +48,8 @@ if __name__ == "__main__":
                 print(f"Score for hedging words: {filter1._score_hedging_words(sent)}")
                 print(f"Score for first person opinion: {filter1._score_first_person_opinion(sent)}")
                 print(f"Score for contradiction markers: {filter1.score_contradiction_markers(sent)}")
+                print(f"Score for factual relationships: {filter1._score_factual_relationships(sent)}")
+                print(f"Score for definitive statements: {filter1._score_definitive_statements(sent)}")
                 print(f"Total score: {filter1._score_sentence(sent)}")
                 print("===========================================")
             #score += self._score_named_entities(sentence)
@@ -70,8 +72,12 @@ if __name__ == "__main__":
             for claim in claim_list:
                 if label[i] == "VERIFIABLE":
                     _true_true += 1
+                    if debug:
+                        print("Filter 1 correctly identified as VERIFIABLE")
                 elif label[i] == "NOT VERIFIABLE":
                     _false_true += 1
+                    if debug:
+                        print("Filter 1 incorrectly identified as VERIFIABLE")
 
         elif len(non_claim_list) > 0:
             # if len(non_claim_list) > 1:
@@ -82,22 +88,34 @@ if __name__ == "__main__":
             for claim in non_claim_list:
                 if label[i] == "NOT VERIFIABLE":
                     _true_false += 1
+                    if debug:
+                        print("Filter 1 correctly identified as NOT VERIFIABLE")
                 elif label[i] == "VERIFIABLE":
                     _false_false += 1
+                    if debug:
+                        print("Filter 1 incorrectly identified as NOT VERIFIABLE")
 
 
         if len(claim_list2) > 0:
             for claim in claim_list2:
                 if label[i] == "VERIFIABLE":
                     _true_true2 += 1
+                    if debug:
+                        print("Filter 2 correctly identified as VERIFIABLE")
                 elif label[i] == "NOT VERIFIABLE":
                     _false_true2 += 1
+                    if debug:
+                        print("Filter 2 incorrectly identified as VERIFIABLE")
         elif len(non_claim_list2) > 0:
             for claim in non_claim_list2:
                 if label[i] == "NOT VERIFIABLE":
                     _true_false2 += 1
+                    if debug:
+                        print("Filter 2 correctly identified as NOT VERIFIABLE")
                 elif label[i] == "VERIFIABLE":
                     _false_false2 += 1
+                    if debug:
+                        print("Filter 2 incorrectly identified as NOT VERIFIABLE")
     
 
         total = _false_false2 + _false_true2 + _true_true + _false_true + _true_true2 + _true_false2
