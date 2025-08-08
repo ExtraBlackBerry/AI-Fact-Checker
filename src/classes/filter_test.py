@@ -50,6 +50,9 @@ if __name__ == "__main__":
     
     checked_count = 0
     for i, text in enumerate(texts):
+        # stop at 1000 claims
+        if i >= 1000:
+            break
         doc = nlp(text)
         checked_count += 1
         
