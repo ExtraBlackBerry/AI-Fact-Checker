@@ -35,6 +35,7 @@ if __name__ == "__main__":
         #filter2 testing
         filter2 = Filter2()
         non_claim_list2, claim_list2 = filter2._evaluate_text(non_claim_list)   
+        #non_claim_list2, claim_list2 = filter2._evaluate_text([doc])  
     
         if len(claim_list) > 0:
             for claim in claim_list:
@@ -73,12 +74,25 @@ if __name__ == "__main__":
         total = _false_false2 + _false_true2 + _true_true + _false_true + _true_true2 + _true_false2
         total_filter2 = _true_true2 + _true_false2 + _false_true2 + _false_false2
 
+        tp = _true_true + _true_true2
+        fp = _false_true2
+        fn = _true_false2
+        tn = _false_false2
+
         # print(f"Total claims processed: {total}")
         # print(f"Correct Filter1: {_true_true}, Incorrect Filter1: {_false_true}")
         # print(f"Correct Filter1 NOT VARIFIABLE: {_true_false}, INCORRECT Filter1 NOT VARIFIABLE: {_false_false}")
 
         # print(f"Correct Filter2: {_true_true2}, Incorrect Filter2: {_false_true2}")
         # print(f"Correct Filter2 NOT VARIFIABLE: {_true_false2}, INCORRECT Filter2 NOT VARIFIABLE: {_false_false2}")
+
+        print(tp,fp,fn,tn)
+
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+        recall    = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1        = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+
+        print(f"Total claims processed: {i}")
         if _false_false+_false_true+_true_false+_true_true > 0:
             print(f"Percentage Filter1: {(_true_true + _true_false) / (_false_false+_false_true+_true_false+_true_true) * 100:.2f}%")
         if total_filter2 > 0:
@@ -87,6 +101,9 @@ if __name__ == "__main__":
         print(f"Total Correct extration: {(_true_true + _true_true2 + _true_false2) / total * 100:.2f}% claims")
         print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims")
 
+        print(f"Precision: {precision:.2f}")
+        print(f"Recall: {recall:.2f}")
+        print(f"F1 Score: {f1:.2f}")
 
 
 
