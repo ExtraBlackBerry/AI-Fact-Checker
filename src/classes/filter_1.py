@@ -79,25 +79,30 @@ class Filter1:
         Returns:
             float: The score based on named entities.
         """
-        named_entities = [ent.label_ for ent in sentence.ents]
+        entity_counts = {}
         score = 0.0
         
-        # Sentences about people, organizations, locations, etc. are more likely to be claims i think
-        # They are split up so the scores can be adjusted individually
-        # Could maybe increment for each instance of an entity so like multiple people in a sentence
-        if "PERSON" in named_entities:
-            score += 1.5
-        if "ORG" in named_entities:
-            score += 1.5
-        if "GPE" in named_entities:
-            score += 1.5
+        for ent in sentence.ents:
+            entity_counts[ent.label_] = entity_counts.get(ent.label_, 0) + 1
             
-        if "PRODUCT" in named_entities:
-            score += 1.0
-        if "EVENT" in named_entities:
-            score += 1.0
-        if "WORK_OF_ART" in named_entities:
-            score += 1.5
+        # High val ents
+        high_value_entities = {
+            "PERSON": 1.5, "ORG": 1.5, "GPE": 1.5,
+            "WORK_OF_ART": 1.5, "LAW": 2.0, "EVENT": 1.0
+        }
+        
+        # Medium value ents
+        medium_value_entities = {
+            "PRODUCT": 1.0, "LANGUAGE": 0.8, "NORP": 1.2
+        }
+        
+        # Score the ents
+        for entity_type, count in entity_counts.items():
+            if entity_type in high_value_entities:
+                # Score with diminishing returns for multiple of same type
+                score += high_value_entities[entity_type] * min(count, 3) * 0.8**(count - 1) 
+            elif entity_type in medium_value_entities:
+                score += medium_value_entities[entity_type] * min(count, 2) * 0.8**(count - 1)
             
         return score
     
