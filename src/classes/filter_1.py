@@ -12,7 +12,7 @@ import re
 # break down sentences with multiple claims into individual sentences and append the previous part of the sentence? idk
 
 class Filter1:
-    def __init__(self, doc: Doc, score_threshold: float = 2.5):
+    def __init__(self, doc: Doc, score_threshold: float = 3.0):
         """
         Initializes the filter with a document and a score threshold.
         Args:
@@ -69,6 +69,9 @@ class Filter1:
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
         score += self.score_contradiction_markers(sentence)
+        score += self._score_factual_relationships(sentence)
+        score += self._score_definitive_statements(sentence)
+        
         
         return score
 
@@ -125,6 +128,18 @@ class Filter1:
                 # Only score if it's one of these
                 if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
                     score += 1.5
+                    
+        # Frequency words spacy found not catching
+        quantity_words = [
+            "twice", "thrice", "once", "multiple times", "several times",
+            "first", "second", "third", "last", "final", "initial",
+            "more than", "less than", "over", "under", "approximately",
+            "about", "around", "nearly", "almost"
+        ]
+        
+        for word in quantity_words:
+            if word in sentence.text:
+                score += 1.0
 
         # Regex patterns spacy might not catch
         quantity_patterns = [
