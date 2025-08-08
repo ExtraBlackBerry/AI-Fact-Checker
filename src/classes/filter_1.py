@@ -68,6 +68,7 @@ class Filter1:
         score += self._score_is_question(sentence)
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
+        score += self.score_contradiction_markers(sentence)
         
         return score
 
@@ -79,25 +80,30 @@ class Filter1:
         Returns:
             float: The score based on named entities.
         """
-        named_entities = [ent.label_ for ent in sentence.ents]
+        entity_counts = {}
         score = 0.0
         
-        # Sentences about people, organizations, locations, etc. are more likely to be claims i think
-        # They are split up so the scores can be adjusted individually
-        # Could maybe increment for each instance of an entity so like multiple people in a sentence
-        if "PERSON" in named_entities:
-            score += 1.5
-        if "ORG" in named_entities:
-            score += 1.5
-        if "GPE" in named_entities:
-            score += 1.5
+        for ent in sentence.ents:
+            entity_counts[ent.label_] = entity_counts.get(ent.label_, 0) + 1
             
-        if "PRODUCT" in named_entities:
-            score += 1.0
-        if "EVENT" in named_entities:
-            score += 1.0
-        if "WORK_OF_ART" in named_entities:
-            score += 1.5
+        # High val ents
+        high_value_entities = {
+            "PERSON": 1.5, "ORG": 1.5, "GPE": 1.5,
+            "WORK_OF_ART": 1.5, "LAW": 2.0, "EVENT": 1.0
+        }
+        
+        # Medium value ents
+        medium_value_entities = {
+            "PRODUCT": 1.0, "LANGUAGE": 0.8, "NORP": 1.2
+        }
+        
+        # Score the ents
+        for entity_type, count in entity_counts.items():
+            if entity_type in high_value_entities:
+                # Score with diminishing returns for multiple of same type
+                score += high_value_entities[entity_type] * min(count, 3) * 0.8**(count - 1) 
+            elif entity_type in medium_value_entities:
+                score += medium_value_entities[entity_type] * min(count, 2) * 0.8**(count - 1)
             
         return score
     
@@ -120,8 +126,21 @@ class Filter1:
                 if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
                     score += 1.5
 
-        # check for economic quantities that spaCy might miss
-        # TODO: Add regex patterns for "trillions of dollars", "millions of workers"
+        # Regex patterns spacy might not catch
+        quantity_patterns = [
+            r'\d+\s*(trillion|billion|million|thousand)',
+            r'\d+(\.\d+)?\s*percent',
+            r'\$\d+(\.\d+)?\s*(trillion|billion|million|thousand)?',
+            r'\d+\s*times\s*(more|less|higher|lower)',
+            r'increase[ds]?\s*by\s*\d+',
+            r'decrease[ds]?\s*by\s*\d+',
+            r'\d+\s*fold\s*(increase|decrease)',
+            r'grew\s*by\s*\d+',
+            r'fell\s*by\s*\d+'
+        ]
+        for pattern in quantity_patterns:
+            if re.search(pattern, sentence.text.lower()):
+                score += 1.0
 
         return score
 
@@ -320,10 +339,46 @@ class Filter1:
         Returns:
             float: -2 if hedging words are present, otherwise 0.
         """
-        # TODO: Add more hedging words https://knowadays.com/blog/hedging-language-when-to-use-it-and-when-to-avoid-it/
-        hedging_words = ["might", "could", "may", "possibly", "perhaps", "believe",
-                         "think", "feel", "seem", "suggest"]
-        return -2.0 if any(word in sentence.text.lower() for word in hedging_words) else 0.0
+        sentence_text = sentence.text.lower()
+        
+        # Hedging words
+        strong_hedging = ["might", "could", "may", "possibly", "perhaps", "supposedly", "allegedly"]
+        moderate_hedging = ["believe", "think", "feel", "seem", "appear", "suggest", "indicate"]
+        weak_hedging = ["likely", "probably", "generally", "usually", "tends to"]
+        
+        for word in strong_hedging:
+            if word in sentence_text:
+                return -2.5
+        for word in moderate_hedging:
+            if word in sentence_text:
+                return -2.0
+        for word in weak_hedging:
+            if word in sentence_text:
+                return -1.0
+        
+        return 0.0
+    
+    def score_contradiction_markers(self, sentence: Span) -> float:
+        """
+        Scores the presence of contradiction markers in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            Score based on contradiction markers found.
+        """
+        sentence_text = sentence.text.lower()
+    
+        contradiction_markers = [
+            "however", "but", "although", "despite", "nevertheless",
+            "on the other hand", "conversely", "in contrast", "whereas",
+            "while", "yet", "still", "nonetheless", "even though"
+        ]
+        
+        for marker in contradiction_markers:
+            if marker in sentence_text:
+                return 1.0  # Positive score - contradictions often reference facts
+        
+        return 0.0
     
     def _score_first_person_opinion(self, sentence: Span) -> float:
         """
@@ -334,16 +389,30 @@ class Filter1:
             float: -2.5 if first-person opinion is present, otherwise 0.
         """
         sentence_text = sentence.text.lower()
+        score = 0.0
         
-        # Check for first-person opinion phrases
-        opinion_phrases = ["i think", "i believe", "i feel", "i guess", "i suppose", 
-                          "in my opinion", "my view is", "i would say", "i consider",
-                          "we think", "we believe", "we feel", "our opinion"]
+        # Phrases that indicate opinion
+        strong_opinion_phrases = [
+            "i think", "i believe", "i feel", "in my opinion", 
+            "my view is", "i would say", "i consider"
+        ]
+        weak_opinion_phrases = [
+            "i guess", "i suppose", "we think", "we believe", 
+            "we feel", "our opinion"
+        ]
         
-        for phrase in opinion_phrases:
+        # Score for present phrases
+        for phrase in strong_opinion_phrases:
             if phrase in sentence_text:
-                return -2.5
-        # TODO: Maybe check for first person pronouns like "I", "we", "my", "our"? for less penalty
+                return -3.0
+        for phrase in weak_opinion_phrases:
+            if phrase in sentence_text:
+                return -1.5
+            
+        # Check for first-person pronouns with opinion verbs
+        first_person_pattern = r'\b(i|we)\s+(think|believe|feel|suppose|guess|consider)\b'
+        if re.search(first_person_pattern, sentence_text):
+            score -= 2.0
         return 0.0
         
         
