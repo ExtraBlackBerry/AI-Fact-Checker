@@ -125,8 +125,21 @@ class Filter1:
                 if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
                     score += 1.5
 
-        # check for economic quantities that spaCy might miss
-        # TODO: Add regex patterns for "trillions of dollars", "millions of workers"
+        # Regex patterns spacy might not catch
+        quantity_patterns = [
+            r'\d+\s*(trillion|billion|million|thousand)',
+            r'\d+(\.\d+)?\s*percent',
+            r'\$\d+(\.\d+)?\s*(trillion|billion|million|thousand)?',
+            r'\d+\s*times\s*(more|less|higher|lower)',
+            r'increase[ds]?\s*by\s*\d+',
+            r'decrease[ds]?\s*by\s*\d+',
+            r'\d+\s*fold\s*(increase|decrease)',
+            r'grew\s*by\s*\d+',
+            r'fell\s*by\s*\d+'
+        ]
+        for pattern in quantity_patterns:
+            if re.search(pattern, sentence.text.lower()):
+                score += 1.0
 
         return score
 
