@@ -68,6 +68,7 @@ class Filter1:
         score += self._score_is_question(sentence)
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
+        score += self.score_contradiction_markers(sentence)
         
         return score
 
@@ -338,10 +339,46 @@ class Filter1:
         Returns:
             float: -2 if hedging words are present, otherwise 0.
         """
-        # TODO: Add more hedging words https://knowadays.com/blog/hedging-language-when-to-use-it-and-when-to-avoid-it/
-        hedging_words = ["might", "could", "may", "possibly", "perhaps", "believe",
-                         "think", "feel", "seem", "suggest"]
-        return -2.0 if any(word in sentence.text.lower() for word in hedging_words) else 0.0
+        sentence_text = sentence.text.lower()
+        
+        # Hedging words
+        strong_hedging = ["might", "could", "may", "possibly", "perhaps", "supposedly", "allegedly"]
+        moderate_hedging = ["believe", "think", "feel", "seem", "appear", "suggest", "indicate"]
+        weak_hedging = ["likely", "probably", "generally", "usually", "tends to"]
+        
+        for word in strong_hedging:
+            if word in sentence_text:
+                return -2.5
+        for word in moderate_hedging:
+            if word in sentence_text:
+                return -2.0
+        for word in weak_hedging:
+            if word in sentence_text:
+                return -1.0
+        
+        return 0.0
+    
+    def score_contradiction_markers(self, sentence: Span) -> float:
+        """
+        Scores the presence of contradiction markers in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            Score based on contradiction markers found.
+        """
+        sentence_text = sentence.text.lower()
+    
+        contradiction_markers = [
+            "however", "but", "although", "despite", "nevertheless",
+            "on the other hand", "conversely", "in contrast", "whereas",
+            "while", "yet", "still", "nonetheless", "even though"
+        ]
+        
+        for marker in contradiction_markers:
+            if marker in sentence_text:
+                return 1.0  # Positive score - contradictions often reference facts
+        
+        return 0.0
     
     def _score_first_person_opinion(self, sentence: Span) -> float:
         """
