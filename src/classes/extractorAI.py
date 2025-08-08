@@ -64,6 +64,3 @@ class ExtractorAI:
                 print("ID: ", i )
                 print("Cluster ID: ", self._model.labels_[i])
                 print("sentence: ", self._docs[i].text)
-
-    def test_text(self, text):
-        return self._model.predict(text)
