@@ -3,3 +3,8 @@
 *.env
 __pycache__/
 *.pyc
+venv/
+.venv/
+
+*.spacy
+*.db

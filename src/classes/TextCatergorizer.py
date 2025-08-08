@@ -27,14 +27,10 @@ class TextCatergorizer:
                 pass
             else:
                 self._sub_cat_classifier(ent)
-                # for token in ent.sent:
-                #      print(token.text, "Lemma: " , token.lemma_)
-                # if (ent.text.lower()) in self._data_dict.keys():
-                #     ent._.sub_category = self._data_dict[(ent.text.lower())]
-
         return self._doc
     
     def _sub_cat_classifier(self, ent):
+        # ent._.sub_category = "ENTITY"
         if ent.text.lower() in self._data_dict.keys():
              _data = self._data_dict[(ent.text.lower())]
              ent._.sub_category = _data["categories"]
@@ -43,21 +39,23 @@ class TextCatergorizer:
 
 
     def _numeric_classifier(self, ent):                     #can add custom functionality for each Numerical NER
-        match ent.label_:
-            case "CARDINAL":
-                pass
-            case "DATE":
-                pass
-            case "TIME":
-                pass
-            case "MONEY":
-                pass
-            case "ORDINAL":
-                pass
-            case "PERCENT":
-                pass
-            case "QUANTITY":
-                pass
+        ent._.sub_category = "NUMERIC" 
+
+        # match ent.label_:
+        #     case "CARDINAL":
+        #         pass
+        #     case "DATE":
+        #         pass
+        #     case "TIME":
+        #         pass
+        #     case "MONEY":
+        #         pass
+        #     case "ORDINAL":
+        #         pass
+        #     case "PERCENT":
+        #         pass
+        #     case "QUANTITY":
+        #         pass
 
 
 

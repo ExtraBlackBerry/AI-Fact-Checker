@@ -1,3 +1,5 @@
+# 28.07.25 John
+
 import spacy as spc
 from src.util import util
 
