@@ -69,6 +69,10 @@ class Filter1:
         score += self._score_hedging_words(sentence)
         score += self._score_first_person_opinion(sentence)
         score += self.score_contradiction_markers(sentence)
+        score += self._score_factual_relationships(sentence)
+        score += self._score_definitive_statements(sentence)
+        score += self._score_combinations(sentence)
+        
         
         return score
 
@@ -86,15 +90,20 @@ class Filter1:
         for ent in sentence.ents:
             entity_counts[ent.label_] = entity_counts.get(ent.label_, 0) + 1
             
-        # High val ents
         high_value_entities = {
-            "PERSON": 1.5, "ORG": 1.5, "GPE": 1.5,
-            "WORK_OF_ART": 1.5, "LAW": 2.0, "EVENT": 1.0
+            "PERSON": 1.5, 
+            "ORG": 1.5, 
+            "GPE": 1.5,
+            "WORK_OF_ART": 2.0,
+            "LAW": 2.0, 
+            "EVENT": 1.5,
+            "PRODUCT": 1.0
         }
-        
-        # Medium value ents
         medium_value_entities = {
-            "PRODUCT": 1.0, "LANGUAGE": 0.8, "NORP": 1.2
+            "LANGUAGE": 0.8, 
+            "NORP": 1.0,
+            "FAC": 1.0,
+            "LOC": 1.0
         }
         
         # Score the ents
@@ -122,9 +131,19 @@ class Filter1:
                 score += 1.5
             # Make sure words like "today", "moment" don't count as quantifiable
             elif ent.label_ in ["DATE", "TIME"]:
-                # Only score if it's one of these
-                if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
-                    score += 1.5
+                score += 1.0
+                    
+        # Frequency words spacy found not catching
+        quantity_words = [
+            "twice", "thrice", "once", "multiple times", "several times",
+            "first", "second", "third", "last", "final", "initial",
+            "more than", "less than", "over", "under", "approximately",
+            "about", "around", "nearly", "almost"
+        ]
+        
+        for word in quantity_words:
+            if word in sentence.text:
+                score += 1.0
 
         # Regex patterns spacy might not catch
         quantity_patterns = [
@@ -215,6 +234,17 @@ class Filter1:
         for pattern in year_patterns:
             if re.search(pattern, sentence_text):
                 score += 1.5
+                break
+            
+        date_patterns = [
+            r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b',  # "June 14"
+            r'\b\d{1,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)\b',  # "14 June"
+            r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\.?\s+\d{1,2}\b',  # "Jun 14"
+        ]
+        
+        for pattern in date_patterns:
+            if re.search(pattern, sentence_text):
+                score += 1.0
                 break
         
         # Relative temporal phrases 
@@ -414,6 +444,104 @@ class Filter1:
         if re.search(first_person_pattern, sentence_text):
             score -= 2.0
         return 0.0
+    
+    def _score_factual_relationships(self, sentence: Span) -> float:
+        """
+        Scores factual relationship patterns commone in encyclopedic text.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on factual relationships found.
+        """
+        sentence_text = sentence.text.lower()
+        score = 0.0
+        
+        # Common factual patterns
+        factual_patterns = [
+            r'\bis\s+(a|an|the)\s+\w+',  # "X is a Y"
+            r'\bwas\s+(a|an|the)\s+\w+', # "X was a Y" 
+            r'\bstarred\s+in\b',         # "X starred in Y"
+            r'\bappeared\s+in\b',        # "X appeared in Y"
+            r'\bcreated\s+by\b',         # "X created by Y"
+            r'\bwritten\s+by\b',         # "X written by Y"
+            r'\bdirected\s+by\b',        # "X directed by Y"
+            r'\bwon\s+the\b',            # "X won the Y"
+            r'\bowned\s+by\b',           # "X owned by Y"
+            r'\baired\s+on\b',           # "X aired on Y"
+            r"'s\s+\w+\s+is\b",          # "X's Y is Z" (possessive relationships)
+            r"'s\s+\w+\s+was\b",         # "X's Y was Z"
+            r'\bbirthday\s+is\b',        # "birthday is X"
+            r'\bborn\s+on\b',            # "born on X"
+            r'\bdied\s+on\b',            # "died on X"
+        ]
+        for pattern in factual_patterns:
+            if re.search(pattern, sentence_text):
+                score += 1.5
+                break # Only score once per sentence
+        
+        return score
+    
+    def _score_definitive_statements(self, sentence: Span) -> float:
+        """
+        Scores definitive factual statements, Copula verbs are a good indicator.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on definitive statements found.
+        """
+        score = 0.0
+        
+        # https://en.wikipedia.org/wiki/Copula_(linguistics)
+        # 'Be' is the base for copula verbs in English
+        # Look for copula verbs
+        for token in sentence:
+            if token.lemma_ == "be" and token.pos_ == "AUX":
+                score += 1.0
+                break
+        
+        return score
+    
+    def _score_combinations(self, sentence: Span) -> float:
+        """
+        Scores combinations of indicators in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on combinations of indicators found.
+        """
+        score = 0.0
+        
+        has_entities = len(sentence.ents) > 0
+        has_temporal = self._score_temporal_context(sentence) > 0
+        has_numbers = self._score_quantifiable_data(sentence) > 0
+        has_strong_structure = self._score_strong_structures(sentence) > 0
+        has_factual_relationship = self._score_factual_relationships(sentence) > 0
+        
+        # Score combinations
+        if has_entities and has_temporal:
+            score += 1.5 # "Trump won in 2016"
+            
+        if has_entities and has_numbers:
+            score += 1.5 # "The population of France is 67 million"
+            
+        if has_strong_structure and has_entities:
+            score += 0.5
+            
+        if has_entities and has_factual_relationship:
+            score += 1.0  # "Person's X is Y" type statements
+        
+        # Penalty for vague statements
+        # Not usually stating a direct fact
+        vague_patterns = [
+            r'\bis\s+(good|bad|great|terrible|amazing|awful)\b',
+            r'\bhas\s+(many|some|few|several)\s+\w+\b'
+        ]
+        for pattern in vague_patterns:
+            if re.search(pattern, sentence.text.lower()):
+                score -= 1.5
+                break 
+        
+        return score
         
         
 # Custom component
