@@ -126,9 +126,7 @@ class Filter1:
                 score += 1.5
             # Make sure words like "today", "moment" don't count as quantifiable
             elif ent.label_ in ["DATE", "TIME"]:
-                # Only score if it's one of these
-                if any(word in ent.text.lower() for word in ["year", "decade", "trillion", "billion", "million"]):
-                    score += 1.5
+                score += 1.0
                     
         # Frequency words spacy found not catching
         quantity_words = [
@@ -231,6 +229,17 @@ class Filter1:
         for pattern in year_patterns:
             if re.search(pattern, sentence_text):
                 score += 1.5
+                break
+            
+        date_patterns = [
+            r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b',  # "June 14"
+            r'\b\d{1,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)\b',  # "14 June"
+            r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\.?\s+\d{1,2}\b',  # "Jun 14"
+        ]
+        
+        for pattern in date_patterns:
+            if re.search(pattern, sentence_text):
+                score += 1.0
                 break
         
         # Relative temporal phrases 
@@ -444,16 +453,21 @@ class Filter1:
         
         # Common factual patterns
         factual_patterns = [
-        r'\bis\s+(a|an|the)\s+\w+',  # "X is a Y"
-        r'\bwas\s+(a|an|the)\s+\w+', # "X was a Y" 
-        r'\bstarred\s+in\b',         # "X starred in Y"
-        r'\bappeared\s+in\b',        # "X appeared in Y"
-        r'\bcreated\s+by\b',         # "X created by Y"
-        r'\bwritten\s+by\b',         # "X written by Y"
-        r'\bdirected\s+by\b',        # "X directed by Y"
-        r'\bwon\s+the\b',            # "X won the Y"
-        r'\bowned\s+by\b',           # "X owned by Y"
-        r'\baired\s+on\b'            # "X aired on Y"
+            r'\bis\s+(a|an|the)\s+\w+',  # "X is a Y"
+            r'\bwas\s+(a|an|the)\s+\w+', # "X was a Y" 
+            r'\bstarred\s+in\b',         # "X starred in Y"
+            r'\bappeared\s+in\b',        # "X appeared in Y"
+            r'\bcreated\s+by\b',         # "X created by Y"
+            r'\bwritten\s+by\b',         # "X written by Y"
+            r'\bdirected\s+by\b',        # "X directed by Y"
+            r'\bwon\s+the\b',            # "X won the Y"
+            r'\bowned\s+by\b',           # "X owned by Y"
+            r'\baired\s+on\b',           # "X aired on Y"
+            r"'s\s+\w+\s+is\b",          # "X's Y is Z" (possessive relationships)
+            r"'s\s+\w+\s+was\b",         # "X's Y was Z"
+            r'\bbirthday\s+is\b',        # "birthday is X"
+            r'\bborn\s+on\b',            # "born on X"
+            r'\bdied\s+on\b',            # "died on X"
         ]
         for pattern in factual_patterns:
             if re.search(pattern, sentence_text):
@@ -496,16 +510,20 @@ class Filter1:
         has_temporal = self._score_temporal_context(sentence) > 0
         has_numbers = self._score_quantifiable_data(sentence) > 0
         has_strong_structure = self._score_strong_structures(sentence) > 0
+        has_factual_relationship = self._score_factual_relationships(sentence) > 0
         
         # Score combinations
         if has_entities and has_temporal:
-            score += 1.0 # "Trump won in 2016"
+            score += 1.5 # "Trump won in 2016"
             
         if has_entities and has_numbers:
             score += 1.5 # "The population of France is 67 million"
             
         if has_strong_structure and has_entities:
             score += 0.5
+            
+        if has_entities and has_factual_relationship:
+            score += 1.0  # "Person's X is Y" type statements
         
         # Penalty for vague statements
         # Not usually stating a direct fact
