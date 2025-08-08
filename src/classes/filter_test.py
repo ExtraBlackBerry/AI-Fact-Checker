@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
         #filter2 testing
         filter2 = Filter2()
-        non_claim_list2, claim_list2 = filter2._evaluate_text([doc])   
+        non_claim_list2, claim_list2 = filter2._evaluate_text(non_claim_list)   
     
         if len(claim_list) > 0:
             for claim in claim_list:
@@ -84,8 +84,8 @@ if __name__ == "__main__":
         if total_filter2 > 0:
             print(f"Percentage Filter2: {(_true_true2 + _true_false2) / (_false_false2+_false_true2 +_true_false2+_true_true2) * 100:.2f}%")
 
-        # print(f"Total Correct extration: {(_true_true + _true_true2 + _true_false2) / total * 100:.2f}% claims")
-        # print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims")
+        print(f"Total Correct extration: {(_true_true + _true_true2 + _true_false2) / total * 100:.2f}% claims")
+        print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims")
 
 
 
