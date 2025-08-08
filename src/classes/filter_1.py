@@ -12,7 +12,7 @@ import re
 # break down sentences with multiple claims into individual sentences and append the previous part of the sentence? idk
 
 class Filter1:
-    def __init__(self, doc: Doc, score_threshold: float = 3.0):
+    def __init__(self, doc: Doc, score_threshold: float = 2.5):
         """
         Initializes the filter with a document and a score threshold.
         Args:
@@ -414,6 +414,57 @@ class Filter1:
         if re.search(first_person_pattern, sentence_text):
             score -= 2.0
         return 0.0
+    
+    def _score_factual_relationships(self, sentence: Span) -> float:
+        """
+        Scores factual relationship patterns commone in encyclopedic text.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on factual relationships found.
+        """
+        sentence_text = sentence.text.lower()
+        score = 0.0
+        
+        # Common factual patterns
+        factual_patterns = [
+        r'\bis\s+(a|an|the)\s+\w+',  # "X is a Y"
+        r'\bwas\s+(a|an|the)\s+\w+', # "X was a Y" 
+        r'\bstarred\s+in\b',         # "X starred in Y"
+        r'\bappeared\s+in\b',        # "X appeared in Y"
+        r'\bcreated\s+by\b',         # "X created by Y"
+        r'\bwritten\s+by\b',         # "X written by Y"
+        r'\bdirected\s+by\b',        # "X directed by Y"
+        r'\bwon\s+the\b',            # "X won the Y"
+        r'\bowned\s+by\b',           # "X owned by Y"
+        r'\baired\s+on\b'            # "X aired on Y"
+        ]
+        for pattern in factual_patterns:
+            if re.search(pattern, sentence_text):
+                score += 1.5
+                break # Only score once per sentence
+        
+        return score
+    
+    def _score_definitive_statements(self, sentence: Span) -> float:
+        """
+        Scores definitive factual statements, Copula verbs are a good indicator.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on definitive statements found.
+        """
+        score = 0.0
+        
+        # https://en.wikipedia.org/wiki/Copula_(linguistics)
+        # 'Be' is the base for copula verbs in English
+        # Look for copula verbs
+        for token in sentence:
+            if token.lemma_ == "be" and token.pos_ == "AUX":
+                score += 1.0
+                break
+        
+        return score
         
         
 # Custom component
