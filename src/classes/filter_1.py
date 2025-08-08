@@ -352,16 +352,30 @@ class Filter1:
             float: -2.5 if first-person opinion is present, otherwise 0.
         """
         sentence_text = sentence.text.lower()
+        score = 0.0
         
-        # Check for first-person opinion phrases
-        opinion_phrases = ["i think", "i believe", "i feel", "i guess", "i suppose", 
-                          "in my opinion", "my view is", "i would say", "i consider",
-                          "we think", "we believe", "we feel", "our opinion"]
+        # Phrases that indicate opinion
+        strong_opinion_phrases = [
+            "i think", "i believe", "i feel", "in my opinion", 
+            "my view is", "i would say", "i consider"
+        ]
+        weak_opinion_phrases = [
+            "i guess", "i suppose", "we think", "we believe", 
+            "we feel", "our opinion"
+        ]
         
-        for phrase in opinion_phrases:
+        # Score for present phrases
+        for phrase in strong_opinion_phrases:
             if phrase in sentence_text:
-                return -2.5
-        # TODO: Maybe check for first person pronouns like "I", "we", "my", "our"? for less penalty
+                return -3.0
+        for phrase in weak_opinion_phrases:
+            if phrase in sentence_text:
+                return -1.5
+            
+        # Check for first-person pronouns with opinion verbs
+        first_person_pattern = r'\b(i|we)\s+(think|believe|feel|suppose|guess|consider)\b'
+        if re.search(first_person_pattern, sentence_text):
+            score -= 2.0
         return 0.0
         
         
