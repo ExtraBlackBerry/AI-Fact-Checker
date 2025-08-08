@@ -3,6 +3,8 @@ from filter2 import Filter2
 import spacy
 import pandas as pd
 
+show_scores = True
+
 # Test the filter
 if __name__ == "__main__":
     nlp = spacy.load("en_core_web_trf")
@@ -31,6 +33,34 @@ if __name__ == "__main__":
         # Create filter and run it
         filter1 = Filter1(doc)
         non_claim_list, claim_list = filter1.filter_claims()
+        
+        if show_scores:
+            print("========= Filter 1 score breakdown =========")
+            for sent in doc.sents:
+                print(f"Sentence: {sent.text}")
+                print(f"Score for named entities: {filter1._score_named_entities(sent)}")
+                print(f"Score for quantifiable data: {filter1._score_quantifiable_data(sent)}")
+                print(f"Score for strong structures: {filter1._score_strong_structures(sent)}")
+                print(f"Score for temporal context: {filter1._score_temporal_context(sent)}")
+                print(f"Score for factual indicators: {filter1._score_factual_indicators(sent)}")
+                print(f"Score for economic policy language: {filter1._score_economic_policy_language(sent)}")
+                print(f"Score for is question: {filter1._score_is_question(sent)}")
+                print(f"Score for hedging words: {filter1._score_hedging_words(sent)}")
+                print(f"Score for first person opinion: {filter1._score_first_person_opinion(sent)}")
+                print(f"Score for contradiction markers: {filter1.score_contradiction_markers(sent)}")
+                print(f"Total score: {filter1._score_sentence(sent)}")
+                print("===========================================")
+            #score += self._score_named_entities(sentence)
+            #score += self._score_quantifiable_data(sentence)
+            #score += self._score_strong_structures(sentence)
+            #score += self._score_temporal_context(sentence)f
+            #score += self._score_factual_indicators(sentence)
+            #score += self._score_economic_policy_language(sentence)
+            #score += self._score_is_question(sentence)
+            #score += self._score_hedging_words(sentence)
+            #score += self._score_first_person_opinion(sentence)
+            #score += self.score_contradiction_markers(sentence)
+            print("===========================================")
 
         #filter2 testing
         filter2 = Filter2()
@@ -86,8 +116,7 @@ if __name__ == "__main__":
 
         print(f"Total Correct extration: {(_true_true + _true_true2 + _true_false2) / total * 100:.2f}% claims")
         print(f"Total incorrect extraction: {(_false_true2 + _false_false2 + _false_true) / total * 100:.2f}% claims")
-
-
+        
 
 
     
