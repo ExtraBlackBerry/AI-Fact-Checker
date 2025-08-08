@@ -71,6 +71,7 @@ class Filter1:
         score += self.score_contradiction_markers(sentence)
         score += self._score_factual_relationships(sentence)
         score += self._score_definitive_statements(sentence)
+        score += self._score_combinations(sentence)
         
         
         return score
@@ -478,6 +479,44 @@ class Filter1:
             if token.lemma_ == "be" and token.pos_ == "AUX":
                 score += 1.0
                 break
+        
+        return score
+    
+    def _score_combinations(self, sentence: Span) -> float:
+        """
+        Scores combinations of indicators in a sentence.
+        Args:
+            sentence (Span): The sentence to score.
+        Returns:
+            float: Score based on combinations of indicators found.
+        """
+        score = 0.0
+        
+        has_entities = len(sentence.ents) > 0
+        has_temporal = self._score_temporal_context(sentence) > 0
+        has_numbers = self._score_quantifiable_data(sentence) > 0
+        has_strong_structure = self._score_strong_structures(sentence) > 0
+        
+        # Score combinations
+        if has_entities and has_temporal:
+            score += 1.0 # "Trump won in 2016"
+            
+        if has_entities and has_numbers:
+            score += 1.5 # "The population of France is 67 million"
+            
+        if has_strong_structure and has_entities:
+            score += 0.5
+        
+        # Penalty for vague statements
+        # Not usually stating a direct fact
+        vague_patterns = [
+            r'\bis\s+(good|bad|great|terrible|amazing|awful)\b',
+            r'\bhas\s+(many|some|few|several)\s+\w+\b'
+        ]
+        for pattern in vague_patterns:
+            if re.search(pattern, sentence.text.lower()):
+                score -= 1.5
+                break 
         
         return score
         
