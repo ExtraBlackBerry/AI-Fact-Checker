@@ -76,15 +76,8 @@ if __name__ == "__main__":
 
         tp = _true_true + _true_true2
         fp = _false_true2
-        fn = _true_false2
-        tn = _false_false2
-
-        # print(f"Total claims processed: {total}")
-        # print(f"Correct Filter1: {_true_true}, Incorrect Filter1: {_false_true}")
-        # print(f"Correct Filter1 NOT VARIFIABLE: {_true_false}, INCORRECT Filter1 NOT VARIFIABLE: {_false_false}")
-
-        # print(f"Correct Filter2: {_true_true2}, Incorrect Filter2: {_false_true2}")
-        # print(f"Correct Filter2 NOT VARIFIABLE: {_true_false2}, INCORRECT Filter2 NOT VARIFIABLE: {_false_false2}")
+        fn = _false_false2
+        tn = _true_false2
 
         print(tp,fp,fn,tn)
 

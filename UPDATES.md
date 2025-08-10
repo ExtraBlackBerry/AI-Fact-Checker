@@ -1,7 +1,5 @@
 Documentation on what was worked on
 
-[Diagram](https://lucid.app/lucidspark/2ff52c50-2500-4ee2-a7dd-ebf1d90b84be/edit?viewport_loc=-851%2C-3577%2C5191%2C2639%2C0_0&invitationId=inv_b17be3f2-adcc-492d-a712-b17c2a8c2aa1)
-
 -----26/07/25-----
 
 GOAL: Trying to plan a direction and general idea of how the app should work.
@@ -62,13 +60,13 @@ What we did:
 
     Scrapped pipeline interface class and started work on filter 1.
     assigned the architecture for Fact Extraction
-    
-    
+
 Feature updates:
 
     ClaimFilter1.py custom component - Foster
     added scraper to only get categories with SIMILARITY_RATE similiarty to its title.    // SIMILARITY_RATE can be set in simple_spacy_tool.py -john
     TextCatergorizer now assigns sub_categories from the sqlite db if NER.text exists in the db. -john
+
 -----30/07/25-----
 
 GOAL: Learn more indepth about the filters 1,2 for the extractor

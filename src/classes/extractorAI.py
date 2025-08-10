@@ -29,8 +29,8 @@ class ExtractorAI:
 
         self._docs = list(self._doc_bin.get_docs(self._nlp.vocab))
         self._df = self._feature_extraction()
-        self._model = self._set_cluster_model()
-        self._fit_cluster_model()
+        self._model = self._set_svm_model()
+        self._fit_svm_model()
 
     def _feature_extraction(self):
 
@@ -56,23 +56,11 @@ class ExtractorAI:
         })
 
 
-    def _set_cluster_model(self):
+    def _set_svm_model(self):
         return SVC(kernel='linear', random_state=0)
     
-    def _fit_cluster_model(self):
+    def _fit_svm_model(self):
         _X_text = self._vectorizer.fit_transform(self._df['combined'])
         self._model.fit(_X_text, self._labels)
         joblib.dump((self._vectorizer, self._model), 'ExtractorAI.pkl')
     
-    def visualize_clusters(self, n_components=2):
-        _X_text = self._vectorizer.transform(self._df['combined'])
-        _X_embedded = TSNE(n_components=n_components, random_state=0).fit_transform(_X_text.toarray())
-
-        # Get predictions
-        predicted_labels = self._model.predict(_X_text)
-
-        plt.figure(figsize=(10, 8))
-        plt.scatter(_X_embedded[:, 0], _X_embedded[:, 1], c=predicted_labels, cmap='viridis', s=50)
-        plt.title('t-SNE visualization of predicted labels')
-        plt.colorbar()
-        plt.show()
