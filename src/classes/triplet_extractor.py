@@ -99,6 +99,11 @@ class TripletExtractor:
                     for prep_child in child.children:
                         if prep_child.dep_ == "pobj":
                             modifiers.append(prep_child)
+                # If its a numeric mod, get its children as well
+                elif child.dep_ == "nummod":
+                    for nummod_child in child.children:
+                        if nummod_child.dep_ in ["compound", "det"]:
+                            modifiers.append(nummod_child)
             
             # Get relative clauses, they hold additional information about the noun
             if child.dep_ == "relcl":
