@@ -1,9 +1,9 @@
 #john
-import requests
+import requests, os
 from bs4 import BeautifulSoup
 
-API_KEY = "AIzaSyAgdCU8ZIvPw0ksplbXr-HysuhvZfkwJV0"
-CX_ID   = "2634edd2d9b264702"
+API_KEY = os.getenv("API_KEY")
+CX_ID   = os.getenv("CX_ID")
 
 def search_articles(claim, max_results=20):
     url = "https://duckduckgo.com/html/"
@@ -27,17 +27,13 @@ def search_articles(claim, max_results=20):
 
     return results
 
-def google_search(claim, max_results=20):
-    url = "https://www.googleapis.com/customsearch/v1"
+def google_search(claim):
+    url = "https://customsearch.googleapis.com/customsearch/v1"
     params = {
         "key": API_KEY,
         "cx": CX_ID,
-        "q": claim,
-        "num": max_results
+        "q": claim
     }
     r = requests.get(url, params=params)
     results = r.json().get("items", [])
-    print(results)
     return [{"snippet": item["snippet"], "link": item["link"]} for item in results]
-
-print(google_search("Polar bears are the only animals that are thought to actively hunt humans"))
