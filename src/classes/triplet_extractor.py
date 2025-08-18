@@ -19,10 +19,6 @@ class InfoExtractor:
         # Iterate tokens and extract relevant parts based on dependency labels
         for token in self._doc:
             if token.dep_ in ["nsubj", "nsubjpass"]:
-                # add children of the token if they are relevant
-                for child in token.children:
-                    if child.dep_ in ["amod", "compound"]:
-                        parts.append(child.text)
                 parts.append(token.text)
             elif token.dep_ in ["dobj", "pobj", "attr", "mark"]:
                 parts.append(token.text)
@@ -30,18 +26,20 @@ class InfoExtractor:
                 parts.append(token.text)
             elif token.dep_ == "prep":
                 parts.append(token.text)
-            elif token.dep_ in ["amod", "advmod", "conj"]:
+            elif token.dep_ in ["quantmod", "acomp"]:
                 parts.append(token.text)
-            elif token.dep_ in ["aux", "neg"]:
-                parts.append(token.text)
-            elif token.dep_ == "relcl":
-                parts.append(token.text)
-                # Add children of the relative clause
-                for child in token.children:
-                    if child.dep_ in ["amod", "compound", "acomp"]:
-                        parts.append(child.text)
-            elif token.dep_ == "advcl":
-                parts.append(token.text)
+            # elif token.dep_ in ["amod", "advmod", "conj"]:
+            #     parts.append(token.text)
+            # elif token.dep_ in ["aux", "neg"]:
+            #     parts.append(token.text)
+            # elif token.dep_ == "relcl":
+            #     parts.append(token.text)
+            #     # Add children of the relative clause
+            #     for child in token.children:
+            #         if child.dep_ in ["amod", "compound", "acomp"]:
+            #             parts.append(child.text)
+            # elif token.dep_ == "advcl":
+            #     parts.append(token.text)
                 
             # could maybe get children, lots in advcl
             # Maybe add nummod
