@@ -22,15 +22,17 @@ class InfoExtractor:
                 parts.append(token.text)
                 # add children of the token if they are relevant
                 for child in token.children:
-                    if child.dep_ in ["amod", "det", "compound"]:
+                    if child.dep_ in ["amod", "compound"]:
                         parts.append(child.text)
-            elif token.dep_ in ["dobj", "pobj", "attr"]:
+            elif token.dep_ in ["dobj", "pobj", "attr", "mark"]:
                 parts.append(token.text)
             elif token.dep_ == "ROOT":
                 parts.append(token.text)
             elif token.dep_ == "prep":
                 parts.append(token.text)
-            elif token.dep_ in ["amod", "det", "compound"]:
+            elif token.dep_ in ["amod", "compound"]:
+                parts.append(token.text)
+            elif token.dep_ in ["aux", "neg"]:
                 parts.append(token.text)
             elif token.dep_ == "relcl":
                 parts.append(token.text)
@@ -41,6 +43,8 @@ class InfoExtractor:
                 parts.append(token.text)
                 # could maybe get children, lots in advcl
             # Maybe add nummod
+            
+
         
         return " ".join(parts)
         
@@ -49,7 +53,7 @@ class InfoExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "One reason that crows and ravens are associated with death is because they would often follow armies as they marched to battle"
+    test_sentence = "The astronauts aboard the Space Shuttle Challenger most likely didn’t die until they hit the water miles below the initial explosion."
     
     print("Testing TripletExtractor:")
     print("=" * 60)
