@@ -2,10 +2,14 @@
 # Class to extract a subject-predicate-object triplet from a spaCy Doc object.
 
 class TripletExtractor:
-    def __init__(self, doc): # TODO: Remove need for doc, copy johns (pretty sure just set doc method)
+    def __init__(self):
+        self._doc = None
+        self._sentences = None
+        self._predicate = None
+        
+    def set_doc(self, doc):
         self._doc = doc
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
-        self._predicate = None
 
     def extract_triplets(self, text: str):
         triplet = ""
@@ -21,7 +25,7 @@ class TripletExtractor:
             print("DEBUG: No subject found for the predicate.")
         
         # Extract the object
-        obj = self._extract_object()
+        obj = self._extract_objects()
         if obj == "":
             print("DEBUG: No object found for the predicate.")
             
@@ -30,6 +34,9 @@ class TripletExtractor:
         return triplet
     
     def _extract_predicate(self):
+        if not self._sentences:
+            return ""
+        
         sentence = self._sentences[0]
         predicate = ""
         
@@ -39,10 +46,6 @@ class TripletExtractor:
                 predicate = self._extract_full_predicate_phrase(token)
                 self._predicate = token
                 break
-            
-        # If no root verb is found, return an empty string
-        if not predicate:
-            predicate = ""
         
         return predicate
     
@@ -54,38 +57,26 @@ class TripletExtractor:
         for child in self._predicate.children:
             if child.dep_ in ("nsubj", "nsubjpass"):
                 return self._extract_full_noun_phrase(child)
-            
-        # If no subject is found, return an empty string
-        return ""
+        
+        return "" # No subject found
     
-    def _extract_object(self):
-        # Make sure theres a predicate to extract the object from
-        if not self._predicate:
+    def _extract_objects(self):
+        if not self._predicate or not self._sentences:
             return ""
         
-        # Look for direct or indirect objects
-        for child in self._predicate.children:
-            if child.dep_ in ["dobj", "iobj", "attr"]:
-                    return self._extract_full_noun_phrase(child)
-            # Also check for prepositional phrases
-            elif child.dep_ == "prep":
-                for prep_child in child.children:
-                    if prep_child.dep_ == "pobj":
-                        return self._extract_full_noun_phrase(prep_child)
-                    
-        # For passive, look for oprd (object predicate)
-        for child in self._predicate.children:
-            if child.dep_ == "oprd":
-                return self._extract_full_noun_phrase(child)
-                    
-        # For passive, also check for agents
-        for child in self._predicate.children:
-            if child.dep_ == "agent":
-                for agent_child in child.children:
-                    if agent_child.dep_ == "pobj":
-                        return self._extract_full_noun_phrase(agent_child)
-                    
-        return ""  # If no object is found, return an empty string
+        all_parts = []
+        
+        for token in self._sentences[0]:
+            if token.dep_ == "prep":
+                all_parts.append(token.text)
+            elif token.dep_ in ["pobj", "dobj"]:
+                all_parts.append(token.text)
+            elif token.dep_ in ["amod", "nummod"]:
+                all_parts.append(token.text)
+            elif token.dep_ in ['advcl']: # Maybe remove these
+                all_parts.append(token.text)
+        
+        return " ".join(all_parts) if all_parts else ""
     
     def _extract_full_noun_phrase(self, token):
         
@@ -139,7 +130,7 @@ class TripletExtractor:
         before_verb = []
         after_verb = []
         for child in token.children:
-            if child.dep_ in ["aux", "auxpass", "advmod", "neg"]:
+            if child.dep_ in ["aux", "auxpass", "neg"]:
                 if child.i < token.i:
                     before_verb.append(child)
                 else:
@@ -158,14 +149,15 @@ class TripletExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "The unemployment, the number of people who are still looking for work, is still 23 million Americans."
+    test_sentence = "Mr. Ford uh - actually has fewer people now in the private sector in non-farm jobs than when he took office."
     
     print("Testing TripletExtractor:")
     print("=" * 60)
     print(f"Input: {test_sentence}")
     
     doc = nlp(test_sentence)
-    extractor = TripletExtractor(doc)
+    extractor = TripletExtractor()
+    extractor.set_doc(doc)
     result = extractor.extract_triplets("")
     print(f"Result: '{result}'")
     
