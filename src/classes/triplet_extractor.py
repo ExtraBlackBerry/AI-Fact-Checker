@@ -8,12 +8,6 @@ class TripletExtractor:
         self._predicate = None
 
     def extract_triplets(self, text: str):
-        """
-        Extracts triplets from the given text.
-
-        Args:
-            text (str): The input text from which to extract triplets.
-        """
         triplet = ""
         
         # Get sentence (each doc should have only one sentence anyway)
@@ -42,14 +36,6 @@ class TripletExtractor:
         return triplet
     
     def _extract_predicate(self):
-        """
-        Extracts the predicate from the sentence.
-        
-        Args:
-            doc (Doc): The spaCy Doc object containing the sentence.
-        Returns:
-            str: The extracted predicate.
-        """
         sentence = self._sentences[0]
         predicate = ""
         
@@ -68,14 +54,6 @@ class TripletExtractor:
         return predicate
     
     def _extract_subject(self):
-        """
-        Extracts the subject from the predicates dependents.
-        
-        Args:
-            predicate (Token): The predicate token from which to extract the subject.
-        Returns:
-            str: The extracted subject.
-        """
         if not self._predicate:
             print("DEBUG: No predicate found to extract the object.")
             return ""
@@ -115,14 +93,6 @@ class TripletExtractor:
         return ""  # If no object is found, return an empty string
     
     def _extract_full_noun_phrase(self, token):
-        """
-        Extracts the full noun phrase for a given token.
-        
-        Args:
-            token (Token): The token for which to extract the noun phrase.
-        Returns:
-            str: The full noun phrase as a string.
-        """
         phrase_tokens = []
         
         # Get all children that modify the token
@@ -146,14 +116,6 @@ class TripletExtractor:
         return " ".join([token.text for token in all_tokens])
     
     def _extract_full_predicate_phrase(self, token):
-        """
-        Extracts the full predicate phrase for a given token.
-        
-        Args:
-            token (Token): The token for which to extract the predicate phrase.
-        Returns:
-            str: The full predicate phrase as a string.
-        """
         phrase_tokens = []
         
         # Get aux verbs and modifiers
