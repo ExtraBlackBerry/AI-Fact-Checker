@@ -2,12 +2,14 @@
 # Class to extract a subject-predicate-object triplet from a spaCy Doc object.
 
 class TripletExtractor:
-    def __init__(self, doc):
-        self._doc = doc
-        self._sentences = [sent for sent in doc.sents if sent.text.strip()]
+    def __init__(self):
         self._predicate = None
 
-    def extract_triplets(self, text: str):
+    def set_doc(self, doc):
+        self._doc = doc
+        self._sentences = [sent for sent in doc.sents if sent.text.strip()]
+
+    def extract_triplets(self):
         """
         Extracts triplets from the given text.
 
@@ -38,7 +40,7 @@ class TripletExtractor:
             print("DEBUG: No object found for the predicate.")
             
         # Construct the triplet
-        triplet = f"{subject} {predicate} {object}"
+        triplet = f"{subject} {predicate} {object}"   #return [(subject),(predicate),(object))]
         return triplet
     
     def _extract_predicate(self):
