@@ -27,12 +27,12 @@ class TripletExtractor:
             print("DEBUG: No subject found for the predicate.")
         
         # Extract the object
-        object = self._extract_object()
-        if object == "":
+        obj = self._extract_object()
+        if obj == "":
             print("DEBUG: No object found for the predicate.")
             
         # Construct the triplet
-        triplet = f"{subject} {predicate} {object}"
+        triplet = f"{subject} {predicate} {obj}"
         return triplet
     
     def _extract_predicate(self):
@@ -73,6 +73,11 @@ class TripletExtractor:
             print("DEBUG: No predicate found to extract the object.")
             return ""
         
+        # DEBUG: Print all dependencies
+        print("DEBUG: Available dependencies:")
+        for child in self._predicate.children:
+            print(f"  {child.text} -> {child.dep_}")
+            
         # Look for direct or indirect objects
         for child in self._predicate.children:
             if child.dep_ in ["dobj", "iobj", "attr"]:
@@ -121,20 +126,22 @@ class TripletExtractor:
         return " ".join([token.text for token in all_tokens])
     
     def _extract_full_predicate_phrase(self, token):
-        phrase_tokens = []
-        
-        # Get aux verbs and modifiers
-        aux_and_mods = []
+        # Split aux and mods into lists before and after the verb
+        before_verb = []
+        after_verb = []
         for child in token.children:
             if child.dep_ in ["aux", "auxpass", "advmod", "neg"]:
-                aux_and_mods.append(child)
-                
-        # Sort aux and modifiers by their position in the sentence
-        aux_and_mods.sort(key=lambda x: x.i)
+                if child.i < token.i:
+                    before_verb.append(child)
+                else:
+                    after_verb.append(child)
+
+        # Sort each list by their position in the sentence
+        before_verb.sort(key=lambda x: x.i)
+        after_verb.sort(key=lambda x: x.i)
         
         # Build the full predicate phrase
-        all_tokens = [token] + aux_and_mods
-        all_tokens.sort(key=lambda x: x.i)
+        all_tokens = before_verb + [token] + after_verb
         
         return " ".join([token.text for token in all_tokens])
     
@@ -150,7 +157,7 @@ if __name__ == "__main__":
         exit(1)
     
     # Test the Chilean seabass case
-    test_sentence = "Chilean seabass was originally called patagonian toothfish."
+    test_sentence = "We've got the highest inflation we've had in twenty-five years right now, except under this administration, and that was fifty years ago."
     
     print("Testing TripletExtractor:")
     print("=" * 60)
