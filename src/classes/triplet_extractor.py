@@ -22,17 +22,20 @@ class TripletExtractor:
         sentence = self._sentences[0]
         
         # Extract the predicate
-        predicate = self._extract_predicate(sentence)
+        predicate = self._extract_predicate()
         if predicate == "":
             print("DEBUG: No predicate found in the sentence.")
         
         # Extract the subject
+        subject = self._extract_subject(predicate)
+        if subject == "":
+            print("DEBUG: No subject found for the predicate.")
         
         # Extract the object
         
         return triplet
     
-    def _extract_predicate(self, doc):
+    def _extract_predicate(self):
         """
         Extracts the predicate from the sentence.
         
@@ -56,3 +59,24 @@ class TripletExtractor:
             predicate = ""
         
         return predicate
+    
+    def _extract_subject(self, predicate):
+        """
+        Extracts the subject from the sentence.
+        
+        Args:
+            doc (Doc): The spaCy Doc object containing the sentence.
+        Returns:
+            str: The extracted subject.
+        """
+        # Look for nominal or passive subjects
+        for child in predicate.children:
+            if child.dep_ in ("nsubj", "nsubjpass"):
+                return child.text # Return the subject text
+            
+        # If no subject is found, return an empty string
+        print("DEBUG: No subject found for the predicate.")
+        return ""
+    
+    def _extract_object(self, doc):
+        pass
