@@ -35,7 +35,7 @@ class TripletExtractor:
         
         # Find the root verb (predicate)
         for token in sentence:
-            if token.dep_ == "ROOT" and token.pos_ == "VERB":
+            if token.dep_ == "ROOT" and token.pos_ in ["VERB", "AUX"]:
                 predicate = self._extract_full_predicate_phrase(token)
                 self._predicate = token
                 break
@@ -153,7 +153,7 @@ class TripletExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "America has the highest inflation they've had in twenty-five years right now, except under this administration, and that was fifty years ago."
+    test_sentence = "The unemployment, the number of people who are still looking for work, is still 23 million Americans."
     
     print("Testing TripletExtractor:")
     print("=" * 60)
