@@ -83,6 +83,11 @@ class TripletExtractor:
                     if prep_child.dep_ == "pobj":
                         return self._extract_full_noun_phrase(prep_child)
                     
+        # For passive, look for oprd (object predicate)
+        for child in self._predicate.children:
+            if child.dep_ == "oprd":
+                return self._extract_full_noun_phrase(child)
+                    
         # For passive, also check for agents
         for child in self._predicate.children:
             if child.dep_ == "agent":
