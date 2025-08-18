@@ -56,7 +56,7 @@ class TripletExtractor:
         # Find the root verb (predicate)
         for token in sentence:
             if token.dep_ == "ROOT" and token.pos_ == "VERB":
-                predicate = token.text
+                predicate = self._extract_full_predicate_phrase(token)
                 self._predicate = token
                 break
             
@@ -83,7 +83,7 @@ class TripletExtractor:
         # Look for nominal or passive subjects
         for child in self._predicate.children:
             if child.dep_ in ("nsubj", "nsubjpass"):
-                return child.text # Return the subject text
+                return self._extract_full_noun_phrase(child)
             
         # If no subject is found, return an empty string
         print("DEBUG: No subject found for the predicate.")
@@ -98,12 +98,98 @@ class TripletExtractor:
         # Look for direct or indirect objects
         for child in self._predicate.children:
             if child.dep_ in ["dobj", "iobj", "attr"]:
-                    return child.text
+                    return self._extract_full_noun_phrase(child)
             # Also check for prepositional phrases
             elif child.dep_ == "prep":
                 for prep_child in child.children:
                     if prep_child.dep_ == "pobj":
-                        return prep_child.text
+                        return self._extract_full_noun_phrase(prep_child)
+                    
+        # For passive, also check for agents
+        for child in self._predicate.children:
+            if child.dep_ == "agent":
+                for agent_child in child.children:
+                    if agent_child.dep_ == "pobj":
+                        return self._extract_full_noun_phrase(agent_child)
                     
         return ""  # If no object is found, return an empty string
     
+    def _extract_full_noun_phrase(self, token):
+        """
+        Extracts the full noun phrase for a given token.
+        
+        Args:
+            token (Token): The token for which to extract the noun phrase.
+        Returns:
+            str: The full noun phrase as a string.
+        """
+        phrase_tokens = []
+        
+        # Get all children that modify the token
+        modifiers = []
+        for child in token.children:
+            if child.dep_ in ["det", "amod", "compound", "nummod", "nmod", "prep", "poss"]:
+                modifiers.append(child)
+                # If its a preposition, get its children as well
+                if child.dep_ == "prep":
+                    for prep_child in child.children:
+                        if prep_child.dep_ == "pobj":
+                            modifiers.append(prep_child)
+                            
+        # Sort modifiers by their position in the sentence
+        modifiers.sort(key=lambda x: x.i)
+        
+        # Build the full noun phrase
+        all_tokens = [token] + modifiers
+        all_tokens.sort(key=lambda x: x.i)
+        
+        return " ".join([token.text for token in all_tokens])
+    
+    def _extract_full_predicate_phrase(self, token):
+        """
+        Extracts the full predicate phrase for a given token.
+        
+        Args:
+            token (Token): The token for which to extract the predicate phrase.
+        Returns:
+            str: The full predicate phrase as a string.
+        """
+        phrase_tokens = []
+        
+        # Get aux verbs and modifiers
+        aux_and_mods = []
+        for child in token.children:
+            if child.dep_ in ["aux", "auxpass", "advmod", "neg"]:
+                aux_and_mods.append(child)
+                
+        # Sort aux and modifiers by their position in the sentence
+        aux_and_mods.sort(key=lambda x: x.i)
+        
+        # Build the full predicate phrase
+        all_tokens = [token] + aux_and_mods
+        all_tokens.sort(key=lambda x: x.i)
+        
+        return " ".join([token.text for token in all_tokens])
+    
+# Test the implementation
+if __name__ == "__main__":
+    import spacy
+    
+    # Load spaCy model
+    try:
+        nlp = spacy.load("en_core_web_trf")
+    except OSError:
+        print("Please install the English model: python -m spacy download en_core_web_sm")
+        exit(1)
+    
+    # Test the Chilean seabass case
+    test_sentence = "Chilean seabass was originally called patagonian toothfish."
+    
+    print("Testing TripletExtractor:")
+    print("=" * 60)
+    print(f"Input: {test_sentence}")
+    
+    doc = nlp(test_sentence)
+    extractor = TripletExtractor(doc)
+    result = extractor.extract_triplets("")
+    print(f"Result: '{result}'")
