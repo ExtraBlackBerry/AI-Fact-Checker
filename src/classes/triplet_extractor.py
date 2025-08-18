@@ -75,8 +75,11 @@ class TripletExtractor:
                 all_parts.append(token.text)
             elif token.dep_ in ['advcl', 'advmod']: # Maybe remove these
                 all_parts.append(token.text)
-            elif token.dep_ == "nsubjpass":
-                all_parts.append(self._extract_full_noun_phrase(token))
+            elif token.dep_ in ["nsubj", "nsubjpass"]: # grabbing other subjects
+                all_parts.append(token.text)
+                for child in token.children:
+                    if child.dep_ in ["det", "amod", "compound", "nummod"]:
+                        all_parts.append(child.text)
         
         return " ".join(all_parts) if all_parts else ""
     
@@ -151,7 +154,7 @@ class TripletExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "Mr. Ford uh - actually has fewer people now in the private sector in non-farm jobs than when he took office."
+    test_sentence = "One reason that crows and ravens are associated with death is because they would often follow armies as they marched to battle"
     
     print("Testing TripletExtractor:")
     print("=" * 60)
