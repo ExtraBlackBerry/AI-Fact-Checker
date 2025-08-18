@@ -15,7 +15,7 @@ class FactCheckerAPI:
         self.non_claims = []
         self.claims = []
 
-    def _check_facts(self, text):
+    def _check_facts(self, text, url):
         doc = self._nlp(text)
 
         self._filter1._set_doc(doc)
@@ -43,13 +43,25 @@ class FactCheckerAPI:
 
         for claim in self.claims:
             claims.append(claim.text)
-            score = get_snippet(claim)
+            score = get_snippet(claim,url)
             results.append(score)
 
         print(results)
+        sum = 0
+        for n in results:
+            if isinstance(n, str):
+                continue
+            sum += n
+        avg = sum / len(results) if results else 0
+        if avg > 3:
+            print("TRUE")
+        else:
+            print("FALSE")
+
         return {
             "claims": claims,
-            "results": results  
+            "results": results,
+            "average": avg
         }
 
 

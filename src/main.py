@@ -6,6 +6,7 @@ import uvicorn
 
 class TextRequest(BaseModel):
     text: str
+    url: str
 
 app = FastAPI()
 
@@ -19,7 +20,8 @@ app.add_middleware(
 @app.post("/fact_check")
 def check_facts(request: TextRequest):
     fact_checker = FactCheckerAPI()
-    hi = fact_checker._check_facts(request.text)
+    print(request)
+    hi = fact_checker._check_facts(request.text, request.url)
     return hi.get("claims", [])
 
 if __name__ == "__main__":

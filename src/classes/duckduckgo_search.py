@@ -28,6 +28,7 @@ def search_articles(claim, max_results=20):
     return results
 
 def google_search(claim):
+    test = "is" + claim + "true?"
     url = "https://customsearch.googleapis.com/customsearch/v1"
     params = {
         "key": API_KEY,
@@ -35,5 +36,9 @@ def google_search(claim):
         "q": claim
     }
     r = requests.get(url, params=params)
+    print(r)
     results = r.json().get("items", [])
-    return [{"snippet": item["snippet"], "link": item["link"]} for item in results]
+    ans = [{"snippet": item["snippet"], "link": item["link"], "display": item["displayLink"], "title": item["title"]} for item in results]
+    return ans
+
+google_search("omfg im so tired")

@@ -21,31 +21,33 @@ def classify_claim(claim, snippet):
     label = torch.argmax(prediction[0]).item()
     return label
 
-def get_snippet(claim):
+def get_snippet(claim, url):
 
     #extracting triplets
-    tripExtractor.set_doc(claim)
-    print("\nFull dependency tree:")
+    # tripExtractor.set_doc(claim)
+    # print("\nFull dependency tree:")
 
-    for token in claim:
-        print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
+    # for token in claim:
+    #     print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
         
-    triplet = tripExtractor.extract_info()
-    print(triplet)
-    results = google_search(triplet)
+    # triplet = tripExtractor.extract_info()
+    # print(triplet)
+    results = google_search(claim.text)
 
     if not results:
         return "No results found."
     score = 0
     for r in results:
+        if r['link'] == url:
+            continue
         doc_claim = nlp(claim.text)
         doc = nlp(r["snippet"])
         
         _sim = doc_claim.similarity(doc)
-        if _sim > 0.55:
+        if _sim > 0.2:
             print(_sim)
             label = classify_claim(claim.text, r["snippet"])
-            print(f"Label for snippet '{r['snippet']}': {label}")
+            print(f"Label for snippet '{r['title']}': {label} with link {r['display']}")
             if label == 0:
                 score += (1 * _sim)
     return score
