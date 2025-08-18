@@ -11,7 +11,7 @@ class TripletExtractor:
         self._doc = doc
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
 
-    def extract_triplets(self, text: str):
+    def extract_triplets(self):
         triplet = ""
         
         # Extract the predicate
@@ -73,8 +73,10 @@ class TripletExtractor:
                 all_parts.append(token.text)
             elif token.dep_ in ["amod", "nummod"]:
                 all_parts.append(token.text)
-            elif token.dep_ in ['advcl']: # Maybe remove these
+            elif token.dep_ in ['advcl', 'advmod']: # Maybe remove these
                 all_parts.append(token.text)
+            elif token.dep_ == "nsubjpass":
+                all_parts.append(self._extract_full_noun_phrase(token))
         
         return " ".join(all_parts) if all_parts else ""
     
@@ -158,7 +160,7 @@ if __name__ == "__main__":
     doc = nlp(test_sentence)
     extractor = TripletExtractor()
     extractor.set_doc(doc)
-    result = extractor.extract_triplets("")
+    result = extractor.extract_triplets()
     print(f"Result: '{result}'")
     
     print("\nFull dependency tree:")
