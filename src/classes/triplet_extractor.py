@@ -11,7 +11,7 @@ class TripletExtractor:
         self._doc = doc
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
 
-    def extract_triplets(self, text: str):
+    def extract_triplets(self):
         triplet = ""
         
         # Extract the predicate
@@ -73,8 +73,13 @@ class TripletExtractor:
                 all_parts.append(token.text)
             elif token.dep_ in ["amod", "nummod"]:
                 all_parts.append(token.text)
-            elif token.dep_ in ['advcl']: # Maybe remove these
+            elif token.dep_ in ['advcl', 'advmod']: # Maybe remove these
                 all_parts.append(token.text)
+            elif token.dep_ in ["nsubj", "nsubjpass"]: # grabbing other subjects
+                all_parts.append(token.text)
+                for child in token.children:
+                    if child.dep_ in ["det", "amod", "compound", "nummod"]:
+                        all_parts.append(child.text)
         
         return " ".join(all_parts) if all_parts else ""
     
@@ -149,7 +154,7 @@ class TripletExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "Mr. Ford uh - actually has fewer people now in the private sector in non-farm jobs than when he took office."
+    test_sentence = "One reason that crows and ravens are associated with death is because they would often follow armies as they marched to battle"
     
     print("Testing TripletExtractor:")
     print("=" * 60)
@@ -158,7 +163,7 @@ if __name__ == "__main__":
     doc = nlp(test_sentence)
     extractor = TripletExtractor()
     extractor.set_doc(doc)
-    result = extractor.extract_triplets("")
+    result = extractor.extract_triplets()
     print(f"Result: '{result}'")
     
     print("\nFull dependency tree:")
