@@ -3,7 +3,6 @@
 from classes.filter_1 import Filter1
 from classes.filter2 import Filter2
 from classes.Checker2 import get_snippet  
-from classes.triplet_extractor import TripletExtractor
 import spacy
 import pandas as pd
 
@@ -13,7 +12,6 @@ class FactCheckerAPI:
         self._nlp = spacy.load("en_core_web_trf")
         self._filter1 = Filter1()
         self._filter2 = Filter2()
-        self._triplet_extractor = TripletExtractor()
         self.non_claims = []
         self.claims = []
 
