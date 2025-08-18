@@ -38,7 +38,7 @@ class InfoExtractor:
                 parts.append(token.text)
                 # Add children of the relative clause
                 for child in token.children:
-                    if child.dep_ in ["amod", "det", "compound", "acomp"]:
+                    if child.dep_ in ["amod", "compound", "acomp"]:
                         parts.append(child.text)
             elif token.dep_ == "advcl":
                 parts.append(token.text)
