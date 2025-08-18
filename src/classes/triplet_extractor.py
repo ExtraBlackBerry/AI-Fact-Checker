@@ -21,22 +21,38 @@ class TripletExtractor:
             print("Warning: More than one sentence in the document. Only the first sentence will be processed.")
         sentence = self._sentences[0]
         
-        # --- Find Predicate ---
-        # Find root verb (predicate)
-        root_verb = None
-        for token in sentence:
-            if token.dep_ == "ROOT" and token.pos_ == "VERB":
-                root_verb = token
-                break
-            
-        # If no root verb is found, return an empty list
-        if not root_verb:
-            # TODO: REMOVE DEBUG PRINT
-            print("No root verb found in the sentence.")
-            return []
+        # Extract the predicate
+        predicate = self._extract_predicate(sentence)
+        if predicate == "":
+            print("DEBUG: No predicate found in the sentence.")
         
-        # --- Find Subject ---
+        # Extract the subject
         
-        # --- Find object ---
+        # Extract the object
         
         return triplet
+    
+    def _extract_predicate(self, doc):
+        """
+        Extracts the predicate from the sentence.
+        
+        Args:
+            doc (Doc): The spaCy Doc object containing the sentence.
+        Returns:
+            str: The extracted predicate.
+        """
+        sentence = self._sentences[0]
+        predicate = ""
+        
+        # Find the root verb (predicate)
+        for token in sentence:
+            if token.dep_ == "ROOT" and token.pos_ == "VERB":
+                predicate = token.text
+                break
+            
+        # If no root verb is found, return an empty string
+        if not predicate:
+            print("DEBUG: No root verb found in the sentence.")
+            predicate = ""
+        
+        return predicate
