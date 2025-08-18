@@ -24,15 +24,15 @@ def classify_claim(claim, snippet):
 def get_snippet(claim):
 
     #extracting triplets
-    # tripExtractor.set_doc(claim)
-    # print("\nFull dependency tree:")
+    tripExtractor.set_doc(claim)
+    print("\nFull dependency tree:")
 
-    # for token in claim:
-    #     print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
+    for token in claim:
+        print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
         
-    # triplet = tripExtractor.extract_info()
-    # print(triplet)
-    results = google_search(claim.text)
+    triplet = tripExtractor.extract_info()
+    print(triplet)
+    results = google_search(triplet)
 
     if not results:
         return "No results found."
@@ -42,8 +42,10 @@ def get_snippet(claim):
         doc = nlp(r["snippet"])
         
         _sim = doc_claim.similarity(doc)
-        if _sim > 0.5:
+        if _sim > 0.55:
+            print(_sim)
             label = classify_claim(claim.text, r["snippet"])
+            print(f"Label for snippet '{r['snippet']}': {label}")
             if label == 0:
                 score += (1 * _sim)
     return score
