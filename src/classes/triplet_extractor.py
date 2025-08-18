@@ -20,39 +20,37 @@ class InfoExtractor:
         for token in self._doc:
             if token.dep_ in ["nsubj", "nsubjpass"]:
                 parts.append(token.text)
-                # add children of the token if they are relevant
-                for child in token.children:
-                    if child.dep_ in ["amod", "det", "compound"]:
-                        parts.append(child.text)
-            elif token.dep_ in ["dobj", "pobj", "attr"]:
+            elif token.dep_ in ["dobj", "pobj", "attr", "mark"]:
                 parts.append(token.text)
             elif token.dep_ == "ROOT":
                 parts.append(token.text)
             elif token.dep_ == "prep":
                 parts.append(token.text)
-            elif token.dep_ in ["amod", "det", "compound"]:
+            elif token.dep_ in ["quantmod", "acomp"]:
                 parts.append(token.text)
-            elif token.dep_ == "relcl":
-                parts.append(token.text)
-                for child in token.head.children:
-                    if child.dep_ in ["amod", "det", "compound"]:
-                        parts.append(child.text)
-            elif token.dep_ == "advcl":
-                parts.append(token.text)
-                # could maybe get children, lots in advcl
+            # elif token.dep_ in ["amod", "advmod", "conj"]:
+            #     parts.append(token.text)
+            # elif token.dep_ in ["aux", "neg"]:
+            #     parts.append(token.text)
+            # elif token.dep_ == "relcl":
+            #     parts.append(token.text)
+            #     # Add children of the relative clause
+            #     for child in token.children:
+            #         if child.dep_ in ["amod", "compound", "acomp"]:
+            #             parts.append(child.text)
+            # elif token.dep_ == "advcl":
+            #     parts.append(token.text)
+                
+            # could maybe get children, lots in advcl
             # Maybe add nummod
-        
+            
         return " ".join(parts)
         
-    
-# Test the implementation
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "One reason that crows and ravens are associated with death is because they would often follow armies as they marched to battle"
+    test_sentence = "Today it is up to about $38,000 of earnings that is subject to the payroll tax for Social Security"
     
-    print("Testing TripletExtractor:")
-    print("=" * 60)
     print(f"Input: {test_sentence}")
     
     doc = nlp(test_sentence)
