@@ -88,7 +88,6 @@ class TripletExtractor:
         return ""  # If no object is found, return an empty string
     
     def _extract_full_noun_phrase(self, token):
-        phrase_tokens = []
         
         # Get all children that modify the token
         modifiers = []
@@ -100,6 +99,26 @@ class TripletExtractor:
                     for prep_child in child.children:
                         if prep_child.dep_ == "pobj":
                             modifiers.append(prep_child)
+            
+            # Get relative clauses, they hold additional information about the noun
+            if child.dep_ == "relcl":
+                for rel_child in child.children:
+                    if rel_child.dep_ == "prep":
+                        # Add the prep
+                        modifiers.append(rel_child)
+                        for prep_child in rel_child.children:
+                            if prep_child.dep_ == "pobj":
+                                # Add the object
+                                modifiers.append(prep_child)
+                                for pobj_child in prep_child.children:
+                                    if pobj_child.dep_ in ["nummod", "amod", "compound"]:
+                                        # Add any modifiers of the object
+                                        modifiers.append(pobj_child)
+                                        
+                                        # Also get children of modifier to catch compound parts
+                                        for mod_child in pobj_child.children:
+                                            if mod_child.dep_ in ["compound", "punct"]:
+                                                modifiers.append(mod_child)
                             
         # Sort modifiers by their position in the sentence
         modifiers.sort(key=lambda x: x.i)
