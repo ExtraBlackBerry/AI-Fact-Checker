@@ -19,44 +19,40 @@ class InfoExtractor:
         # Iterate tokens and extract relevant parts based on dependency labels
         for token in self._doc:
             if token.dep_ in ["nsubj", "nsubjpass"]:
-                parts.append(token.text)
                 # add children of the token if they are relevant
                 for child in token.children:
                     if child.dep_ in ["amod", "compound"]:
                         parts.append(child.text)
+                parts.append(token.text)
             elif token.dep_ in ["dobj", "pobj", "attr", "mark"]:
                 parts.append(token.text)
             elif token.dep_ == "ROOT":
                 parts.append(token.text)
             elif token.dep_ == "prep":
                 parts.append(token.text)
-            elif token.dep_ in ["amod", "compound"]:
+            elif token.dep_ in ["amod", "advmod", "conj"]:
                 parts.append(token.text)
             elif token.dep_ in ["aux", "neg"]:
                 parts.append(token.text)
             elif token.dep_ == "relcl":
                 parts.append(token.text)
-                for child in token.head.children:
-                    if child.dep_ in ["amod", "det", "compound"]:
+                # Add children of the relative clause
+                for child in token.children:
+                    if child.dep_ in ["amod", "det", "compound", "acomp"]:
                         parts.append(child.text)
             elif token.dep_ == "advcl":
                 parts.append(token.text)
-                # could maybe get children, lots in advcl
+                
+            # could maybe get children, lots in advcl
             # Maybe add nummod
             
-
-        
         return " ".join(parts)
         
-    
-# Test the implementation
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "The astronauts aboard the Space Shuttle Challenger most likely didn’t die until they hit the water miles below the initial explosion."
+    test_sentence = "Today it is up to about $38,000 of earnings that is subject to the payroll tax for Social Security"
     
-    print("Testing TripletExtractor:")
-    print("=" * 60)
     print(f"Input: {test_sentence}")
     
     doc = nlp(test_sentence)
