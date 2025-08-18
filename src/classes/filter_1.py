@@ -12,7 +12,7 @@ import re
 # break down sentences with multiple claims into individual sentences and append the previous part of the sentence? idk
 
 class Filter1:
-    def __init__(self, doc: Doc, score_threshold: float = 8.0):
+    def __init__(self, score_threshold: float = 8.0):
         """
         Initializes the filter with a document and a score threshold.
         Args:
@@ -20,6 +20,8 @@ class Filter1:
             score_threshold (float): Threshold for claim probability scores.
         """
         self._score_threshold = score_threshold
+
+    def _set_doc(self, doc):
         self._doc = doc
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
         

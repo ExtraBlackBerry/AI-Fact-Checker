@@ -80,3 +80,7 @@ Feature updates:
     added diagram on how the ML part of extractor will work -john
     added diagram of rule based extractor -foster
     implemented fallback claimbuster claim extractor -foseter
+
+-----17/08/25-----
+
+Claim extractor complete with 90%+ accuracy F1 score

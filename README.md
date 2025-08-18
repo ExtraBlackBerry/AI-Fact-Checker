@@ -35,7 +35,7 @@ pip install kmeans-pytorch
 
 
 pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 -john i am using cuda 11.3
-
+pip install fastapi, pydantic
 
 
 python -m spacy download en_core_web_sm #for scraper only

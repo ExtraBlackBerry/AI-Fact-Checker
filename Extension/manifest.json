@@ -1,0 +1,16 @@
+{
+  "name": "fact Checker",
+  "description": "An extension to check facts from selected text",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["contextMenus", "activeTab", "scripting"],
+  "background": {
+    "service_worker": "fact_checker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["UI.js"]
+    }
+  ]
+}

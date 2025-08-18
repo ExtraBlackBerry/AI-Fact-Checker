@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from extractorAI import ExtractorAI
+from classes.extractorAI import ExtractorAI
 
 class Filter2:
     def __init__(self):
