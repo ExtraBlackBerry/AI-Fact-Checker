@@ -148,15 +148,7 @@ class TripletExtractor:
 # Test the implementation
 if __name__ == "__main__":
     import spacy
-    
-    # Load spaCy model
-    try:
-        nlp = spacy.load("en_core_web_trf")
-    except OSError:
-        print("Please install the English model: python -m spacy download en_core_web_sm")
-        exit(1)
-    
-    # Test the Chilean seabass case
+    nlp = spacy.load("en_core_web_trf")
     test_sentence = "We've got the highest inflation we've had in twenty-five years right now, except under this administration, and that was fifty years ago."
     
     print("Testing TripletExtractor:")
