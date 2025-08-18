@@ -26,7 +26,7 @@ class InfoExtractor:
                 parts.append(token.text)
             elif token.dep_ == "prep":
                 parts.append(token.text)
-            elif token.dep_ in ["quantmod", "acomp"]:
+            elif token.dep_ in ["quantmod", "acomp", "nummod"]:
                 parts.append(token.text)
             # elif token.dep_ in ["amod", "advmod", "conj"]:
             #     parts.append(token.text)
@@ -49,7 +49,7 @@ class InfoExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "Today it is up to about $38,000 of earnings that is subject to the payroll tax for Social Security"
+    test_sentence = "40 Today it is up to about $38,000 of earnings that is subject to the payroll tax for Social Security"
     
     print(f"Input: {test_sentence}")
     
