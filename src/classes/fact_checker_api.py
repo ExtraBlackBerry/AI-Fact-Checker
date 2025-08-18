@@ -24,6 +24,7 @@ class FactCheckerAPI:
         non_claim_temp2, claim_temp2 = self._filter2._evaluate_text(non_claim_temp1)
 
         self.non_claims.extend(non_claim_temp2)
+
         self.claims.extend(claim_temp1)
         self.claims.extend(claim_temp2)
 
@@ -32,11 +33,10 @@ class FactCheckerAPI:
         results = []
 
         for claim in claims:
+
             score = get_snippet(claim)
             results.append(score)
-
         print(results)
-
         return {
             "claims": claims,
             "results": results  

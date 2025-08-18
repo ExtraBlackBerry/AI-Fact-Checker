@@ -17,6 +17,7 @@ def classify_claim(claim, snippet):
 
 def get_snippet(claim):
     results = search_articles(claim)
+
     if not results:
         return "No results found."
     score = 0
