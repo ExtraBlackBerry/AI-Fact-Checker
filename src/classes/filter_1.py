@@ -545,10 +545,12 @@ class Filter1:
         
         return score
         
-        
-# Custom component
-@Language.component("claim_filter1")
-def claim_filter1_component(doc: Doc):
-    filter1 = Filter1(doc)
-    return filter1.filter_claims()
+
+# Stuff for making this a spaCy component
+# To bring back, make class take a doc directly in init 
+# # Custom component
+# @Language.component("claim_filter1")
+# def claim_filter1_component(doc: Doc):
+#     filter1 = Filter1(doc)
+#     return filter1.filter_claims()
 
