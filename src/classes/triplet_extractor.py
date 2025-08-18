@@ -2,19 +2,13 @@
 # Class to extract a subject-predicate-object triplet from a spaCy Doc object.
 
 class TripletExtractor:
-    def __init__(self, doc):
+    def __init__(self, doc): # TODO: Remove need for doc, copy johns (pretty sure just set doc method)
         self._doc = doc
         self._sentences = [sent for sent in doc.sents if sent.text.strip()]
         self._predicate = None
 
     def extract_triplets(self, text: str):
         triplet = ""
-        
-        # Get sentence (each doc should have only one sentence anyway)
-        if len(self._sentences) > 1:
-            # TODO: REMOVE DEBUG PRINT
-            print("Warning: More than one sentence in the document. Only the first sentence will be processed.")
-        sentence = self._sentences[0]
         
         # Extract the predicate
         predicate = self._extract_predicate()
@@ -48,14 +42,12 @@ class TripletExtractor:
             
         # If no root verb is found, return an empty string
         if not predicate:
-            print("DEBUG: No root verb found in the sentence.")
             predicate = ""
         
         return predicate
     
     def _extract_subject(self):
         if not self._predicate:
-            print("DEBUG: No predicate found to extract the object.")
             return ""
         
         # Look for nominal or passive subjects
@@ -64,20 +56,13 @@ class TripletExtractor:
                 return self._extract_full_noun_phrase(child)
             
         # If no subject is found, return an empty string
-        print("DEBUG: No subject found for the predicate.")
         return ""
     
     def _extract_object(self):
         # Make sure theres a predicate to extract the object from
         if not self._predicate:
-            print("DEBUG: No predicate found to extract the object.")
             return ""
         
-        # DEBUG: Print all dependencies
-        print("DEBUG: Available dependencies:")
-        for child in self._predicate.children:
-            print(f"  {child.text} -> {child.dep_}")
-            
         # Look for direct or indirect objects
         for child in self._predicate.children:
             if child.dep_ in ["dobj", "iobj", "attr"]:
@@ -149,7 +134,7 @@ class TripletExtractor:
 if __name__ == "__main__":
     import spacy
     nlp = spacy.load("en_core_web_trf")
-    test_sentence = "We've got the highest inflation we've had in twenty-five years right now, except under this administration, and that was fifty years ago."
+    test_sentence = "America has the highest inflation they've had in twenty-five years right now, except under this administration, and that was fifty years ago."
     
     print("Testing TripletExtractor:")
     print("=" * 60)
@@ -159,3 +144,7 @@ if __name__ == "__main__":
     extractor = TripletExtractor(doc)
     result = extractor.extract_triplets("")
     print(f"Result: '{result}'")
+    
+    print("\nFull dependency tree:")
+    for token in doc:
+        print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
