@@ -84,3 +84,5 @@ Feature updates:
 -----17/08/25-----
 
 Claim extractor complete with 90%+ accuracy F1 score
+Added Chrome Extension wrapper.
+Finished a simple verifier.
