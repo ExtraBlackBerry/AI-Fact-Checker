@@ -2,13 +2,11 @@
 import torch
 from transformers import RobertaTokenizer, RobertaForSequenceClassification
 from classes.duckduckgo_search import google_search
-from classes.triplet_extractor import InfoExtractor
 import spacy
 
 tokenizer = RobertaTokenizer.from_pretrained('Dzeniks/roberta-fact-check')
 model = RobertaForSequenceClassification.from_pretrained('Dzeniks/roberta-fact-check')
 nlp = spacy.load("en_core_web_md")
-tripExtractor = InfoExtractor()
 
 def classify_claim(claim, snippet):
     x = tokenizer.encode_plus(claim, snippet, return_tensors="pt")
@@ -21,18 +19,8 @@ def classify_claim(claim, snippet):
     return label
 
 def get_snippet(claim, url):
-
-    # extracting triplets
-    tripExtractor.set_doc(claim)
-    print("\nFull dependency tree:")
-
-    for token in claim:
-        print(f"{token.text:12} -> {token.dep_:10} | head: {token.head.text:12} | children: {[child.text for child in token.children]}")
-        
-    triplet = tripExtractor.extract_info()
-    print(triplet)
     
-    doc_claim = nlp(triplet)
+    doc_claim = nlp(claim)
     links = []
     focus = []
     for token in doc_claim:

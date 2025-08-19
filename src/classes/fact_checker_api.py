@@ -5,7 +5,6 @@ from classes.filter2 import Filter2
 from classes.Checker2 import get_snippet  
 import spacy
 import pandas as pd
-from classes.triplet_extractor import InfoExtractor
 
 
 class FactCheckerAPI:
@@ -29,12 +28,6 @@ class FactCheckerAPI:
         self.claims.extend(claim_temp1)
 
         self.claims.extend(claim_temp2)
-
-        # for doc in self.claims:
-        #     self._triplet_extractor.set_doc(doc)
-        #     triplets = self._triplet_extractor.extract_triplets()
-        #     print(f"Extracted triplets from claim: {triplets}")
-        #     claims.append(triplets)
 
         results = []
         claims = []
