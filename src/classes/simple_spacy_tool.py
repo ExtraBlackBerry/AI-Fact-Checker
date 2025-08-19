@@ -1,7 +1,7 @@
 # 28.07.25 John
 
 import spacy as spc
-from src.util import util
+from util import util
 
 SIMILARITY_RATE = 0.5
 
@@ -9,6 +9,9 @@ class Spacy_Interface:
     def __init__(self, pipeline_type = "en_core_web_sm", disable_list = []): #"tagger", "attribute_ruler","parser"
         self._nlp = spc.load(pipeline_type, disable=disable_list)
         
+    def get_nlp(self):
+        return self._nlp
+
     def lemmatize_list(self, data_list, title):
 
         _result = []

@@ -1,5 +1,9 @@
-import requests
+#john
+import requests, os
 from bs4 import BeautifulSoup
+
+API_KEY = os.getenv("API_KEY")
+CX_ID   = os.getenv("CX_ID")
 
 def search_articles(claim, max_results=20):
     url = "https://duckduckgo.com/html/"
@@ -9,17 +13,32 @@ def search_articles(claim, max_results=20):
     }
     response = requests.get(url, headers=headers, params=params, timeout=15)
 
+
     soup = BeautifulSoup(response.text, "html.parser")
-    links = []
+
+    print(soup)
 
     results = []
-    for res in soup.select(".result__snippet")[:max_results]:
-        title_tag = res.find_previous_sibling("a", class_="result__a")
-        link = title_tag["href"] if title_tag else None
 
+    for res in soup.select(".result__snippet")[:max_results]:
         results.append({
-            "snippet": res.get_text(strip=True),
-            "link": link
+            "snippet": res.get_text(strip=True)
         })
 
     return results
+
+def google_search(claim):
+    test = "is" + claim + "true?"
+    url = "https://customsearch.googleapis.com/customsearch/v1"
+    params = {
+        "key": API_KEY,
+        "cx": CX_ID,
+        "q": claim
+    }
+    r = requests.get(url, params=params)
+    print(r)
+    results = r.json().get("items", [])
+    ans = [{"snippet": item["snippet"], "link": item["link"], "display": item["displayLink"], "title": item["title"]} for item in results]
+    return ans
+
+google_search("omfg im so tired")
