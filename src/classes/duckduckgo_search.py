@@ -16,8 +16,6 @@ def search_articles(claim, max_results=20):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    print(soup)
-
     results = []
 
     for res in soup.select(".result__snippet")[:max_results]:
@@ -27,18 +25,18 @@ def search_articles(claim, max_results=20):
 
     return results
 
-def google_search(claim):
+def google_search(claim, focus):
     test = "is" + claim + "true?"
     url = "https://customsearch.googleapis.com/customsearch/v1"
     params = {
         "key": API_KEY,
         "cx": CX_ID,
-        "q": claim
+        "q": test,
+        "exactTerms": focus
     }
     r = requests.get(url, params=params)
-    print(r)
     results = r.json().get("items", [])
+    if not results:
+        print("No results found.")
     ans = [{"snippet": item["snippet"], "link": item["link"], "display": item["displayLink"], "title": item["title"]} for item in results]
     return ans
-
-google_search("omfg im so tired")

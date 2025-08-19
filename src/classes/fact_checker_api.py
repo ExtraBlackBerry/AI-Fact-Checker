@@ -5,6 +5,7 @@ from classes.filter2 import Filter2
 from classes.Checker2 import get_snippet  
 import spacy
 import pandas as pd
+from classes.triplet_extractor import InfoExtractor
 
 
 class FactCheckerAPI:
@@ -26,11 +27,8 @@ class FactCheckerAPI:
         self.non_claims.extend(non_claim_temp2)
 
         self.claims.extend(claim_temp1)
-        print("1")
-        print(claim_temp1)
+
         self.claims.extend(claim_temp2)
-        print("2")
-        print(claim_temp2)
 
         # for doc in self.claims:
         #     self._triplet_extractor.set_doc(doc)
@@ -40,28 +38,31 @@ class FactCheckerAPI:
 
         results = []
         claims = []
+        all_links = []
+
+        if not self.claims:
+            print("NO CLAIMS FOUND")
+            return {
+                "score": "NOTHING TO CHECK HERE"
+            }
+
+        test = " ".join([claim.text for claim in self.claims])
 
         for claim in self.claims:
             claims.append(claim.text)
-            score = get_snippet(claim,url)
+            score,links = get_snippet(claim.text,url)
             results.append(score)
+            all_links.extend(links)
 
-        print(results)
         sum = 0
         for n in results:
             if isinstance(n, str):
                 continue
             sum += n
         avg = sum / len(results) if results else 0
-        if avg > 3:
-            print("TRUE")
-        else:
-            print("FALSE")
-
         return {
-            "claims": claims,
-            "results": results,
-            "average": avg
+            "score": avg,
+            "links": all_links
         }
 
 

@@ -20,7 +20,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     })
     .then(response => response.json())
     .then(data => {
-      chrome.tabs.sendMessage(tab.id, { result: data });
+      chrome.tabs.sendMessage(tab.id, { result: { results: data.links, score: data.score } });
     });
   }
 });

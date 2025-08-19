@@ -20,9 +20,8 @@ app.add_middleware(
 @app.post("/fact_check")
 def check_facts(request: TextRequest):
     fact_checker = FactCheckerAPI()
-    print(request)
     hi = fact_checker._check_facts(request.text, request.url)
-    return hi.get("claims", [])
+    return hi
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
