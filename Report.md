@@ -114,6 +114,8 @@ The user interacts with the system via the browser extension. This can be done b
 
 The extraction process was evaluated on a previously unseen test validation set by Claimbusters. After integrating both filter1 (Rule-Based) and filter2(SVM) into the extraction pipeline, the resulting performance demonstrated a remarkable improvement when compared to baseline models available publicly.
 
+<img width="775" height="164" alt="result_extraction" src="https://github.com/user-attachments/assets/306921da-2798-43ac-8064-8bfee890f04f" />
+
 Model 1 was configured with a filter 1 threshold of 8, which resulted in higher predictive accuracy but a lower F1 score. This behaviour is expected, since a stricter threshold leads to more precise extraction by rejecting borderline cases, which reduces recall. In contrast, Model 2 applied a lower filter 1 threshold of 4, allowing a larger number of claims (including some faulty ones) to pass through, increasing recall at the expense of precision.  
 Filter2 recovered approximately 80 % of the claims missed by filter1 and achieved an accuracy of around 93 %. Overall, both iterations of our proposed models outperformed the existing baseline models across all evaluated metrics.
 
