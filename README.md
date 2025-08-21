@@ -22,6 +22,8 @@ A Natural Language Processing (NLP) project focused on verifying factual and sta
 - ✅ Develop a browser extension to highlight and verify factual statements in real-time.
 
 ---How to run it---
+Install all the required libraries
 
 Install Extension
-Run main.py
+
+Run the backend by running main.py
