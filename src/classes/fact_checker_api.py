@@ -32,18 +32,23 @@ class FactCheckerAPI:
         results = []
         claims = []
         all_links = []
-
+        ents_list = []
         if not self.claims:
             print("NO CLAIMS FOUND")
             return {
                 "score": "NOTHING TO CHECK HERE"
             }
 
+        for claim in self.claims:
+            for ents in claim.ents:
+                if ents.label_ == "PERSON" or ents.label_ == "ORG" or ents.label_ == "GPE" or ents.label_ == "LOC" or ents.label_ == "PRODUCT":
+                    ents_list.append(f'"{ents.text}"')
+
         test = " ".join([claim.text for claim in self.claims])
 
         for claim in self.claims:
             claims.append(claim.text)
-            score,links = get_snippet(claim.text,url)
+            score,links = get_snippet(claim.text ," ".join(ents_list), url)
             results.append(score)
             all_links.extend(links)
 

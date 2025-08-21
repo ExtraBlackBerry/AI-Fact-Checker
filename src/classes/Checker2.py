@@ -18,16 +18,12 @@ def classify_claim(claim, snippet):
     label = torch.argmax(prediction[0]).item()
     return label
 
-def get_snippet(claim, url):
+def get_snippet(claim, focus, url):
     
     doc_claim = nlp(claim)
     links = []
-    focus = []
-    for token in doc_claim:
-            if token.dep_ == "nsubj":
-                focus.append(f'"{token.text}"')
 
-    results = google_search(claim ,(" ".join(focus)))
+    results = google_search(claim, focus)
     if not results:
         print("No results found.")
         return 0,[]
@@ -41,7 +37,7 @@ def get_snippet(claim, url):
         _sim = doc_claim.similarity(doc)
         _sim2 = doc_claim.similarity(doc2)
 
-        if _sim > 0.3 and _sim2 > 0.1:
+        if _sim > 0.2:
             label = classify_claim(claim, r["snippet"])
             if label == 0:
                 score += (1 * _sim + _sim2) / 2

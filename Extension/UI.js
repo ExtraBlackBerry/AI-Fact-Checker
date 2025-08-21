@@ -29,7 +29,6 @@ chrome.runtime.onMessage.addListener((message) => {
   popup.style.fontFamily = "Arial, sans-serif";
   popup.style.cursor = "move";
 
-  // Close button
   const closeBtn = document.createElement("span");
   closeBtn.textContent = "×";
   closeBtn.style.cursor = "pointer";
@@ -38,7 +37,6 @@ chrome.runtime.onMessage.addListener((message) => {
   closeBtn.addEventListener("click", () => popup.remove());
   popup.appendChild(closeBtn);
 
-  // Score section (number or string)
   if (typeof score === "number") {
     const circle = document.createElement("div");
     circle.textContent = score.toFixed(2);
@@ -62,14 +60,12 @@ chrome.runtime.onMessage.addListener((message) => {
     popup.appendChild(msg);
   }
 
-  // Toggle
   const toggle = document.createElement("div");
   toggle.textContent = "Links ▼";
   toggle.style.cursor = "pointer";
   toggle.style.fontWeight = "600";
   popup.appendChild(toggle);
 
-  // Links container (scrollable)
   const linksContainer = document.createElement("div");
   linksContainer.style.display = "none";
   linksContainer.style.maxHeight = "150px";
@@ -92,7 +88,6 @@ chrome.runtime.onMessage.addListener((message) => {
     toggle.textContent = open ? "Links ▲" : "Links ▼";
   });
 
-  // Dragging
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;

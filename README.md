@@ -21,23 +21,7 @@ A Natural Language Processing (NLP) project focused on verifying factual and sta
 - ✅ Build a backend system to scrape and store Wikipedia category data.
 - ✅ Develop a browser extension to highlight and verify factual statements in real-time.
 
----
+---How to run it---
 
-## 🧰 Required Libraries
-
-Install dependencies with:
-
-```bash
-pip install matplotlib seaborn spacy networkx pandas dotenv
-pip install wikipedia wikipedia-api sqlite3
-pip install scikit-learn matplotlib
-pip install kmeans-pytorch
-
-
-pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 -john i am using cuda 11.3
-pip install fastapi, pydantic
-
-python -m spacy download en_core_web_md #for sim check
-
-python -m spacy download en_core_web_sm #for scraper only
-```
+Install Extension
+Run main.py

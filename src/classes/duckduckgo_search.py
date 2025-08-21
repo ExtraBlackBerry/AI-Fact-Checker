@@ -26,8 +26,9 @@ def search_articles(claim, max_results=20):
     return results
 
 def google_search(claim, focus):
-    test = "is" + claim + "true?"
+    test = claim
     url = "https://customsearch.googleapis.com/customsearch/v1"
+    print(claim)
     params = {
         "key": API_KEY,
         "cx": CX_ID,
@@ -35,6 +36,7 @@ def google_search(claim, focus):
         "exactTerms": focus
     }
     r = requests.get(url, params=params)
+    print(r)
     results = r.json().get("items", [])
     if not results:
         print("No results found.")
