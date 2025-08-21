@@ -110,12 +110,6 @@ The user interacts with the system via the browser extension. This can be done b
 
 5. **Interface Display**: The final score along with supporting evidence is sent to the extension to be displayed to the user in a clean, intuitive manner.
 
-## Time frame Estimation of each phase
-
-![][image1]
-
-#
-
 # Results and Evaluation
 
 The extraction process was evaluated on a previously unseen test validation set by Claimbusters. After integrating both filter1 (Rule-Based) and filter2(SVM) into the extraction pipeline, the resulting performance demonstrated a remarkable improvement when compared to baseline models available publicly.
