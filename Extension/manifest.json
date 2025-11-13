@@ -3,7 +3,13 @@
   "description": "An extension to check facts from selected text",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": ["contextMenus", "activeTab", "scripting"],
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "fact_checker.js"
   },
